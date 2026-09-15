@@ -1,0 +1,96 @@
+# Resumen del F29 tal como se le presenta al cliente: agrupado en IVA,
+# Retenciones y PPM, con signos (+) (-) (=) y los montos que restan entre
+# paréntesis.
+#
+# CÓMO LEER ESTE ARCHIVO
+#   codigo:      código del F29 del que sale el monto. Puede ser una lista: se
+#                usa el primero que venga en la declaración, lo que permite
+#                cubrir variantes del formulario sin tocar el código fuente.
+#   signo:       "+", "-" o "=" (subtotal). Sólo se imprime.
+#   parentesis:  muestra el monto entre paréntesis. Por defecto, cuando signo es "-".
+#   siempre:     la línea aparece aunque el monto sea cero. Por defecto se omite.
+#   suma_de:     códigos cuya suma algebraica debe dar este total. Si no cuadra,
+#                el programa lo avisa en vez de callarlo.
+#
+# LOS CÓDIGOS SON AJUSTABLES A PROPÓSITO. Cada contribuyente usa un subconjunto
+# distinto del formulario, y las líneas cuyo código no venga en la declaración
+# simplemente no se imprimen: un código que no calce nunca inventa una cifra.
+# Verifica contra el instructivo vigente del F29 los que marcamos con ⚠.
+
+grupos:
+  - titulo: "IVA"
+    lineas:
+      - signo: "+"
+        glosa: "IVA DF Boletas electrónicas"
+        codigo: ["111", "110"]            # ⚠ verifica: débito por boletas
+      # Si tu cliente emite liquidaciones de factura (mandatos, comisiones),
+      # descomenta esta línea con el código que le corresponda en su formulario:
+      # - signo: "-"
+      #   glosa: "IVA DF Liquidaciones factura"
+      #   codigo: "___"                   # ⚠ verifica en el F29 del cliente
+      - signo: "+"
+        glosa: "IVA DF Facturas afectas"
+        codigo: "502"
+      - signo: "="
+        glosa: "Total IVA Débito"
+        codigo: "538"
+        siempre: true
+        total: true
+
+      - separador: true
+
+      - signo: "-"
+        glosa: "IVA CF Facturas afectas"
+        codigo: ["520", "511"]            # ⚠ verifica: crédito por facturas del giro
+      - signo: "+"
+        glosa: "IVA CF Notas de crédito recibidas"
+        codigo: ["527", "528"]            # ⚠ verifica: notas de crédito recibidas
+      - signo: "-"
+        glosa: "Remanente IVA CF mes anterior"
+        codigo: "504"
+      - signo: "="
+        glosa: "Total IVA Crédito"
+        codigo: "537"
+        parentesis: true
+        siempre: true
+        total: true
+
+      - separador: true
+
+      - signo: "="
+        glosa: "Remanente IVA CF mes siguiente (IVA DF − IVA CF)"
+        codigo: "077"
+        destacar: true
+
+  - titulo: "Retenciones"
+    lineas:
+      - glosa: "Impuesto único 2ª categoría"
+        codigo: "048"
+      - glosa: "Honorarios serv. profesionales"
+        codigo: "151"
+      - signo: "="
+        glosa: "Total retenciones a pagar"
+        suma_de: ["048", "151"]
+        siempre: true
+        total: true
+
+  - titulo: "PPM"
+    lineas:
+      - glosa: "Base imponible PPM"
+        codigo: "563"
+      # Si el cliente suspende PPM por pérdida tributaria (art. 90 LIR),
+      # descomenta con el código que aparezca en su formulario:
+      # - glosa: "Pérdida trib. art. 90"
+      #   codigo: "___"                   # ⚠ verifica en el F29 del cliente
+      - signo: "="
+        glosa: "PPM neto determinado"
+        codigo: "062"
+        total: true
+    # Nota que reemplaza al grupo completo cuando no hay PPM que pagar.
+    nota_si_cero: "No paga PPM"
+    codigo_cero: "062"
+
+# Línea final del resumen.
+total:
+  glosa: "TOTAL A PAGAR F29 {periodo}"
+  codigos: ["094", "091", "547"]

@@ -2,143 +2,89 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<title>Aviso de pago F29 — {{ periodo.etiqueta }} — {{ razon_social }}</title>
+<title>F29 {{ periodo.etiqueta }} — {{ razon_social }}</title>
 <style>{{ css | safe }}</style>
 </head>
 <body>
 <div class="hoja">
 
-  <header class="encabezado">
-    <div class="marca">
-      {% if logo_uri %}<img class="logo" src="{{ logo_uri }}" alt="{{ estudio.nombre }}">{% endif %}
-      <div class="marca-texto">
-        <div class="estudio">{{ estudio.nombre or "Aviso de pago" }}</div>
-        {% if estudio.correo or estudio.telefono %}
-        <div class="estudio-contacto">
-          {{ estudio.correo }}{% if estudio.correo and estudio.telefono %} · {% endif %}{{ estudio.telefono }}
-        </div>
-        {% endif %}
-      </div>
+  <header class="cabecera">
+    <div>
+      {% if logo_uri %}<img class="logo" src="{{ logo_uri }}" alt="{{ estudio.nombre }}">
+      {% else %}<div class="estudio">{{ estudio.nombre }}</div>{% endif %}
     </div>
-    <div class="sello">
-      <div class="sello-titulo">Formulario 29</div>
-      <div class="sello-periodo">{{ periodo.etiqueta }}</div>
-    </div>
+    <div class="periodo">F29 · {{ periodo.etiqueta }}</div>
   </header>
 
-  <h1 class="titulo">
-    {% if hay_que_pagar %}Aviso de pago{% else %}Comprobante de declaración{% endif %}
-  </h1>
-  <p class="bajada">
-    {% if procedencia == "presentada" %}
-      Declaración mensual de IVA y retenciones (F29) presentada ante el Servicio de Impuestos Internos.
-    {% elif procedencia == "guardada" %}
-      Declaración mensual de IVA y retenciones (F29) preparada en el Servicio de Impuestos Internos.
-    {% else %}
-      Declaración mensual de IVA y retenciones (F29) del Servicio de Impuestos Internos.
-    {% endif %}
-  </p>
-
-  <section class="ficha">
-    <div><span class="etiqueta">Contribuyente</span><span class="valor">{{ razon_social }}</span></div>
-    <div><span class="etiqueta">RUT</span><span class="valor">{{ rut }}</span></div>
-    <div><span class="etiqueta">Período tributario</span><span class="valor">{{ periodo.etiqueta }}</span></div>
-    <div><span class="etiqueta">Folio SII</span><span class="valor">{{ folio or "—" }}</span></div>
-    {% if estado %}<div><span class="etiqueta">Estado</span><span class="valor">{{ estado }}</span></div>{% endif %}
-    <div class="ancho"><span class="etiqueta">Formulario</span><span class="valor">{{ procedencia_glosa }}</span></div>
-    <div><span class="etiqueta">Emitido</span><span class="valor">{{ emitido }}</span></div>
-  </section>
+  <div class="quien">
+    <div class="razon">{{ razon_social }}</div>
+    <div class="rut">{{ rut }}{% if folio %} · Folio {{ folio }}{% endif %}</div>
+  </div>
 
   {% if es_propuesta_del_sii %}
-  <section class="advertencia">
-    <strong>Atención:</strong> las cifras de este documento provienen de la propuesta que
-    arma el SII con el Registro de Compras y Ventas, no de la declaración del
-    contribuyente. No las uses para cobrar sin revisarlas.
-  </section>
+  <p class="advertencia">
+    <strong>Atención:</strong> estas cifras vienen de la propuesta del SII, no de la
+    declaración del contribuyente. No cobres con ellas sin revisarlas.
+  </p>
   {% endif %}
 
-  {% if hay_que_pagar %}
-  <section class="monto">
-    <div class="monto-etiqueta">Total a pagar</div>
-    <div class="monto-cifra">{{ monto_a_pagar }}</div>
-    <div class="monto-plazo">Pagar a más tardar el <strong>{{ vencimiento }}</strong></div>
-  </section>
-  {% else %}
-  <section class="monto sin-pago">
-    <div class="monto-etiqueta">Sin pago asociado</div>
-    <div class="monto-cifra">$0</div>
-    <div class="monto-plazo">
-      {% if remanente %}Queda un remanente de crédito fiscal de <strong>{{ remanente }}</strong> para el período siguiente.
-      {% else %}La declaración del período no genera impuesto a pagar.{% endif %}
-    </div>
-  </section>
-  {% endif %}
-
-  {% if resumen %}
-  <section class="bloque">
-    <h2>Resumen de la declaración</h2>
-    <table class="tabla">
-      <thead><tr><th class="cod">Código</th><th>Concepto</th><th class="num">Monto</th></tr></thead>
-      <tbody>
-      {% for fila in resumen %}
-        <tr>
-          <td class="cod">{{ fila.codigo }}</td>
-          <td>{{ fila.glosa }}</td>
-          <td class="num">{{ fila.monto }}</td>
-        </tr>
-      {% endfor %}
-      </tbody>
-    </table>
-  </section>
-  {% endif %}
-
-  {% if hay_que_pagar and (pago.modo in ("transferencia", "ambos")) and pago.numero_cuenta %}
-  <section class="bloque">
-    <h2>Datos para transferencia</h2>
-    <table class="tabla datos-pago">
-      <tbody>
-        {% if pago.titular %}<tr><td>Titular</td><td><strong>{{ pago.titular }}</strong></td></tr>{% endif %}
-        {% if pago.rut_titular %}<tr><td>RUT</td><td>{{ pago.rut_titular }}</td></tr>{% endif %}
-        {% if pago.banco %}<tr><td>Banco</td><td>{{ pago.banco }}</td></tr>{% endif %}
-        {% if pago.tipo_cuenta %}<tr><td>Tipo de cuenta</td><td>{{ pago.tipo_cuenta }}</td></tr>{% endif %}
-        <tr><td>N° de cuenta</td><td><strong>{{ pago.numero_cuenta }}</strong></td></tr>
-        <tr><td>Monto</td><td><strong>{{ monto_a_pagar }}</strong></td></tr>
-        <tr><td>Glosa sugerida</td><td>F29 {{ periodo.codigo }} · {{ rut }}</td></tr>
-        {% if pago.correo_confirmacion %}
-        <tr><td>Enviar comprobante a</td><td>{{ pago.correo_confirmacion }}</td></tr>
+  <table class="resumen">
+    {% for grupo in resumen.grupos %}
+    <tbody>
+      <tr class="titulo-grupo"><th colspan="2">{{ grupo.titulo }}</th></tr>
+      {% for linea in grupo.lineas %}
+        {% if linea.separador %}
+      <tr class="separador"><td colspan="2"></td></tr>
+        {% else %}
+      <tr class="{{ 'total' if linea.total }}{{ ' destacar' if linea.destacar }}">
+        <td class="glosa">{% if linea.signo %}<span class="signo">({{ linea.signo }})</span>{% endif %}{{ linea.glosa }}</td>
+        <td class="monto">{{ monto(linea.monto, parentesis=linea.parentesis) }}</td>
+      </tr>
         {% endif %}
-      </tbody>
-    </table>
-  </section>
+      {% endfor %}
+      {% if grupo.nota %}
+      <tr class="nota-grupo"><td colspan="2">{{ grupo.nota }}</td></tr>
+      {% endif %}
+    </tbody>
+    {% endfor %}
+  </table>
+
+  <div class="total-final {{ 'sin-pago' if not resumen.hay_que_pagar }}">
+    <div class="total-glosa">{{ resumen.total_glosa }}</div>
+    <div class="total-monto">{{ monto(resumen.total_monto) }}</div>
+  </div>
+
+  {% if resumen.hay_que_pagar %}
+  <p class="vencimiento">Fecha de vencimiento: <strong>{{ resumen.vencimiento_texto }}</strong></p>
   {% endif %}
 
-  {% if hay_que_pagar and pago.modo in ("sii", "ambos") %}
-  <section class="bloque aviso-sii">
-    <h2>Pago directo en el SII</h2>
-    <p>
-      También puedes pagar en línea en el portal del SII, en
-      <em>Servicios online → Impuestos mensuales → Declarar y pagar (F29)</em>, con el folio
-      <strong>{{ folio or "de esta declaración" }}</strong>.
-    </p>
-    <p class="enlace">{{ pago.url_pago_sii }}</p>
-  </section>
+  {% if resumen.descuadres %}
+  <div class="descuadre">
+    <strong>Revisa estas cifras:</strong>
+    <ul>{% for d in resumen.descuadres %}<li>{{ d }}</li>{% endfor %}</ul>
+  </div>
   {% endif %}
 
-  {% if captura_uri %}
-  <section class="bloque">
-    <h2>Comprobante en el SII</h2>
-    <img class="captura" src="{{ captura_uri }}" alt="Comprobante de la declaración F29 en el SII">
-  </section>
+  {% if resumen.hay_que_pagar and pago.modo in ("transferencia", "ambos") and pago.numero_cuenta %}
+  <div class="pago">
+    <div class="pago-titulo">Para transferir</div>
+    <table class="pago-tabla"><tbody>
+      {% if pago.titular %}<tr><td>Titular</td><td>{{ pago.titular }}</td></tr>{% endif %}
+      {% if pago.rut_titular %}<tr><td>RUT</td><td>{{ pago.rut_titular }}</td></tr>{% endif %}
+      {% if pago.banco %}<tr><td>Banco</td><td>{{ pago.banco }}{% if pago.tipo_cuenta %} · {{ pago.tipo_cuenta }}{% endif %}</td></tr>{% endif %}
+      <tr><td>Cuenta</td><td><strong>{{ pago.numero_cuenta }}</strong></td></tr>
+      <tr><td>Glosa</td><td>F29 {{ periodo.codigo }} · {{ rut }}</td></tr>
+    </tbody></table>
+  </div>
   {% endif %}
 
-  {% if pago.nota %}<p class="nota">{{ pago.nota }}</p>{% endif %}
+  {% if resumen.hay_que_pagar and pago.modo in ("sii", "ambos") %}
+  <p class="pago-sii">O paga directo en el SII: {{ pago.url_pago_sii }}</p>
+  {% endif %}
 
   <footer class="pie">
-    <p>
-      Documento generado a partir de la declaración registrada en el SII para el período
-      {{ periodo.etiqueta }}. El comprobante oficial es el que emite el Servicio de Impuestos Internos.
-    </p>
-    {% if estudio.nombre %}<p>{{ estudio.nombre }}{% if estudio.sitio_web %} · {{ estudio.sitio_web }}{% endif %}</p>{% endif %}
+    {{ estudio.nombre }}{% if estudio.correo %} · {{ estudio.correo }}{% endif %}{% if estudio.telefono %} · {{ estudio.telefono }}{% endif %}
+    <span class="pie-proc">{{ procedencia_glosa }}</span>
   </footer>
 
 </div>

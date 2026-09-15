@@ -77,11 +77,12 @@ def test_sin_clave_sii_el_mensaje_explica_como_guardarla(config, monkeypatch):
         config.clave_sii(config.cliente("acme"))
 
 
-def test_catalogo_de_codigos_tiene_lo_esencial():
-    catalogo = modulo_config.cargar_catalogo()
-    assert "091" in catalogo["glosas"]
-    assert "547" in catalogo["destacados"]
-    assert catalogo["codigos_monto_a_pagar"][0] == "094"
+def test_el_layout_del_resumen_define_los_grupos_esperados():
+    from bringmef29 import resumen
+
+    layout = resumen.cargar_layout()
+    assert [g["titulo"] for g in layout["grupos"]] == ["IVA", "Retenciones", "PPM"]
+    assert layout["total"]["codigos"][0] == "094"
 
 
 def test_el_ejemplo_versionado_es_cargable(monkeypatch, tmp_path):

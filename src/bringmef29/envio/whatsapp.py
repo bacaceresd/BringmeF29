@@ -31,7 +31,8 @@ from urllib.parse import quote, urljoin
 import requests
 
 from ..config import Config, ConfigWhatsApp
-from ..documentos.formato import fecha_larga, pesos
+from ..calendario import fecha_con_dia_semana
+from ..documentos.formato import pesos
 from ..modelos import Contribuyente, DeclaracionF29
 
 _log = logging.getLogger(__name__)
@@ -135,7 +136,7 @@ class EnviadorWhatsApp:
                 periodo_codigo=declaracion.periodo.codigo,
                 folio=declaracion.folio,
                 monto=pesos(declaracion.monto_a_pagar),
-                vencimiento=fecha_larga(declaracion.periodo.vencimiento_legal()),
+                vencimiento=fecha_con_dia_semana(self._vencimiento(declaracion, contribuyente)),
                 estudio=self.config.estudio.nombre,
             )
 
@@ -152,7 +153,7 @@ class EnviadorWhatsApp:
         if declaracion.hay_que_pagar:
             partes += [
                 f"*Total a pagar: {pesos(declaracion.monto_a_pagar)}*",
-                f"Plazo: hasta el {fecha_larga(declaracion.periodo.vencimiento_legal())}",
+                f"Plazo: hasta el {fecha_con_dia_semana(self._vencimiento(declaracion, contribuyente))} (23:59 hrs)",
                 "",
             ]
             partes += self._instrucciones_pago(declaracion)
@@ -163,6 +164,12 @@ class EnviadorWhatsApp:
         if self.config.estudio.nombre:
             partes += ["", self.config.estudio.nombre]
         return "\n".join(partes)
+
+    @staticmethod
+    def _vencimiento(declaracion: DeclaracionF29, contribuyente: Contribuyente):
+        return declaracion.periodo.vencimiento_legal(
+            facturador_electronico=contribuyente.facturador_electronico
+        )
 
     def _instrucciones_pago(self, declaracion: DeclaracionF29) -> list[str]:
         pago = self.config.pago

@@ -94,6 +94,18 @@ def construir_parser() -> argparse.ArgumentParser:
         help="Sigue con el resto de los clientes si uno falla.",
     )
 
+    # -- interfaz web local --------------------------------------------------
+    p_web = sub.add_parser(
+        "web",
+        help="Abre la pantalla de RUT y clave en el navegador.",
+        description=(
+            "Levanta una pantalla local donde ingresas RUT y clave tributaria y sale la "
+            "tabla del F29. Escucha sólo en 127.0.0.1: la clave no sale de este equipo."
+        ),
+    )
+    p_web.add_argument("--puerto", type=int, default=8029, help="Puerto local (por defecto 8029).")
+    p_web.add_argument("--sin-abrir", action="store_true", help="No abre el navegador solo.")
+
     # -- utilitarios --------------------------------------------------------
     sub.add_parser("clientes", help="Lista los clientes configurados.")
 
@@ -170,6 +182,11 @@ def _despachar(args: argparse.Namespace) -> int:
         return _comando_clave(args)
 
     config = cargar(args.config)
+    if args.comando == "web":
+        from .web import servir
+
+        servir(config, puerto=args.puerto, abrir=not args.sin_abrir)
+        return 0
     if args.comando == "clientes":
         return _comando_clientes(config)
     if args.comando == "lote":

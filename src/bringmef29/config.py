@@ -15,7 +15,6 @@ from .seguridad import AlmacenClaves
 
 RUTA_CONFIG_POR_DEFECTO = Path("config/clientes.yml")
 RUTA_ALMACEN_POR_DEFECTO = Path(".secretos/claves.json")
-RUTA_CATALOGO = Path(__file__).parent / "recursos" / "codigos_f29.yml"
 
 _NO_ALFANUM = re.compile(r"[^A-Z0-9]")
 
@@ -210,14 +209,9 @@ def _cliente_desde_dict(bruto: dict) -> Contribuyente:
         correo_copia=_como_lista(bruto.get("correo_copia")),
         whatsapp=str(bruto.get("whatsapp", "")),
         nombre_contacto=str(bruto.get("nombre_contacto", "")),
+        facturador_electronico=bool(bruto.get("facturador_electronico", True)),
         clave_sii=clave or None,
     )
-
-
-def cargar_catalogo(ruta: str | Path | None = None) -> dict:
-    """Catálogo de glosas y códigos del F29."""
-    archivo = Path(ruta) if ruta else RUTA_CATALOGO
-    return yaml.safe_load(archivo.read_text(encoding="utf-8")) or {}
 
 
 # --------------------------------------------------------------------------- #

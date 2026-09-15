@@ -27,21 +27,66 @@ cuándo y a dónde.
 
 ---
 
+## La pantalla
+
+```bash
+bringmef29 web
+```
+
+Abre en tu navegador una pantalla con **Ingrese RUT** y **Clave tributaria**, trae el
+F29 del período y muestra la tabla. Escucha sólo en `127.0.0.1`: la clave va del
+formulario al proceso que la usa y nada más — no se guarda en disco, no entra a los
+logs y no sale del equipo. Desde ahí se descargan el PDF y la imagen.
+
+Si prefieres la terminal, todo lo que hace la pantalla está también en los comandos
+de más abajo.
+
 ## Qué genera
+
+El aviso es una tabla y nada más, agrupada como la escribe un contador:
+
+```
+IVA
+  (+) IVA DF Boletas electrónicas                      23.030.105.-
+  (+) IVA DF Facturas afectas                           2.317.063.-
+  (=) Total IVA Débito                                  2.317.063.-
+
+  (-) IVA CF Facturas afectas                          (1.993.566.-)
+  (+) IVA CF Notas de crédito recibidas                     6.674.-
+  (-) Remanente IVA CF mes anterior                    (2.533.186.-)
+  (=) Total IVA Crédito                                (4.520.078.-)
+
+  (=) Remanente IVA CF mes siguiente                    2.203.015.-
+
+Retenciones
+      Impuesto único 2ª categoría                          53.572.-
+      Honorarios serv. profesionales                      386.874.-
+  (=) Total retenciones a pagar                           440.446.-
+
+PPM
+      Base imponible PPM                                13.823.935.-
+      No paga PPM
+
+TOTAL A PAGAR F29 AGOSTO 2026                            440.446.-
+Fecha de vencimiento: Lunes 21 de septiembre, 2026 - 23:59 hrs
+```
+
+El PDF y la imagen son la misma tabla: el PDF en A4 para adjuntar al correo, la
+imagen para mandar por WhatsApp.
 
 Por cada cliente y período, en `salida/<rut>/<aaaamm>/`:
 
 | Archivo | Para qué sirve |
 |---|---|
 | `F29-<periodo>-<rut>.pdf` | El aviso de pago. Va adjunto al correo. |
-| `F29-<periodo>-<rut>.png` | Tarjeta cuadrada con el monto, pensada para WhatsApp. |
+| `F29-<periodo>-<rut>.png` | La misma tabla como imagen, para WhatsApp. |
 | `comprobante-sii.png` | Captura de la pantalla del SII (sólo en modo navegador). Se incrusta en el PDF. |
 | `f29-sii.pdf` | El PDF oficial del SII, cuando la pantalla ofrece la descarga. |
 | `declaracion.json` | Los códigos leídos, para auditoría y para reimprimir sin volver al SII. |
 
 El aviso distingue dos casos: si hay impuesto que enterar muestra el monto, el
 plazo y los datos de transferencia; si el período no genera pago, lo dice y
-muestra el remanente de crédito fiscal (código 077) en vez de pedir plata.
+muestra el remanente de crédito fiscal en vez de pedir plata.
 
 ---
 
@@ -101,6 +146,9 @@ Pide la clave sin mostrarla en pantalla y la guarda cifrada en
 ## Uso
 
 ```bash
+# La pantalla de RUT y clave en el navegador
+bringmef29 web
+
 # Ver los clientes configurados
 bringmef29 clientes
 
@@ -243,9 +291,29 @@ la declaración, sólo reporta lo que el SII ya tiene registrado.
 
 ---
 
-## Cómo se decide el monto a pagar
+## Cómo se arma el resumen
 
-Se toma el primero de estos códigos que venga con valor mayor que cero:
+Las líneas, sus glosas, sus signos y de qué código sale cada monto están en
+`src/bringmef29/recursos/resumen_f29.yml`. Ese archivo está hecho para que lo
+edites: cada contribuyente usa un subconjunto distinto del formulario.
+
+Tres reglas que conviene conocer:
+
+- **Un código que no venga en la declaración no imprime nada.** Una línea mal
+  mapeada desaparece del resumen; nunca inventa una cifra.
+- **Una línea admite varios códigos** (`codigo: ["520", "511"]`): se usa el
+  primero que exista, lo que cubre variantes del formulario sin tocar código.
+- **Los totales se cuadran.** Cuando el layout declara de qué componentes sale un
+  total (`suma_de`), el programa compara esa suma con el total del formulario y
+  avisa si no calzan, en vez de imprimir un resumen que no suma.
+
+Dos líneas vienen comentadas porque su código depende de tu cliente y prefiero no
+adivinarlo: **liquidaciones de factura** y **pérdida tributaria art. 90**.
+Descoméntalas con el código que aparezca en el formulario y quedan andando. Lo
+mismo con las marcadas ⚠ en el archivo: verifícalas contra el instructivo vigente
+del F29.
+
+El **total a pagar** es el primero de estos códigos con valor mayor que cero:
 
 | Prioridad | Código | Glosa |
 |---|---|---|
@@ -253,18 +321,20 @@ Se toma el primero de estos códigos que venga con valor mayor que cero:
 | 2 | `091` | Total a pagar dentro del plazo legal |
 | 3 | `547` | Total determinado |
 
-El orden está en `src/bringmef29/recursos/codigos_f29.yml`, junto con las glosas
-de cada código y la lista de los que aparecen en el resumen del PDF. Ese archivo
-está hecho para que lo edites y lo completes con los códigos que tus clientes
-efectivamente usan; el detalle oficial está en el instructivo vigente del F29 del
-SII.
+## La fecha de vencimiento
 
-La fecha de vencimiento que se muestra es el **día 12 del mes siguiente**, la
-referencia habitual. No contempla la ampliación al día 20 para facturadores
-electrónicos ni el corrimiento por fines de semana y feriados: si necesitas esa
-precisión, ajusta `Periodo.vencimiento_legal()` en `src/bringmef29/modelos.py`.
+Se calcula, no se escribe a mano: **día 20 del mes siguiente** para facturadores
+electrónicos —día 12 en papel, con `facturador_electronico: false` en el cliente—
+corrido al día hábil siguiente cuando cae sábado, domingo o feriado.
 
----
+Los feriados chilenos están en `src/bringmef29/calendario.py`: los fijos, Semana
+Santa calculada, y los movibles por ley (29 de junio, 12 de octubre, 31 de
+octubre) con sus reglas de traslado. Lo que no está —elecciones, feriados
+regionales, prórrogas que el SII decreta para un año puntual— se agrega con
+`feriados_extra`. El calendario oficial lo publica la Dirección del Trabajo.
+
+Así, el F29 de agosto 2026 vence el **lunes 21 de septiembre**: el día 20 cae
+domingo y el 18 y 19 son feriados.
 
 ## Seguridad
 
@@ -290,7 +360,7 @@ clave, y no correr esto en un equipo compartido.
 
 ```bash
 pip install -e ".[dev]"
-pytest              # 163 pruebas
+pytest              # 207 pruebas
 pytest -k documentos   # sólo el armado del PDF y la imagen
 ```
 
@@ -303,7 +373,10 @@ y con dobles de prueba.
 ```
 src/bringmef29/
 ├── cli.py             Interfaz de línea de comandos
+├── web.py             Pantalla local de RUT y clave tributaria
 ├── flujo.py           Orquestador: del SII al aviso enviado
+├── resumen.py         Arma la tabla: IVA, Retenciones, PPM y total
+├── calendario.py      Feriados chilenos y vencimiento del F29
 ├── config.py          Configuración, clientes y resolución de secretos
 ├── modelos.py         Período, declaración F29, aviso de pago
 ├── rut.py             RUT chileno: validación y formatos
@@ -320,10 +393,9 @@ src/bringmef29/
 │   ├── correo.py        SMTP con adjuntos
 │   └── whatsapp.py      enlace wa.me · Twilio · Meta Cloud API
 └── recursos/
-    ├── aviso.html.j2    Plantilla del PDF
-    ├── tarjeta.html.j2  Plantilla de la imagen de WhatsApp
-    ├── aviso.css        Estilos del PDF
-    └── codigos_f29.yml  Catálogo de códigos del formulario
+    ├── aviso.html.j2    Plantilla del PDF y de la imagen
+    ├── aviso.css        Estilos del aviso
+    └── resumen_f29.yml  Qué líneas lleva el resumen y de qué código sale cada una
 ```
 
 Para cambiar el diseño del aviso: `aviso.html.j2` y `aviso.css`. Genera con

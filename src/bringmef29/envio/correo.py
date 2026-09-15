@@ -11,7 +11,8 @@ from email.utils import formataddr, formatdate, make_msgid
 from pathlib import Path
 
 from ..config import ConfigCorreo, Config
-from ..documentos.formato import fecha_larga, pesos
+from ..calendario import fecha_con_dia_semana
+from ..documentos.formato import pesos
 from ..modelos import Contribuyente, DeclaracionF29
 
 _log = logging.getLogger(__name__)
@@ -110,7 +111,7 @@ class EnviadorCorreo:
         if declaracion.hay_que_pagar:
             lineas += [
                 f"Total a pagar: {pesos(declaracion.monto_a_pagar)}",
-                f"Plazo: hasta el {fecha_larga(declaracion.periodo.vencimiento_legal())}",
+                f"Plazo: hasta el {fecha_con_dia_semana(self._vencimiento(declaracion, contribuyente))} (23:59 hrs)",
                 "",
             ]
             lineas += self._instrucciones_pago(declaracion)
@@ -132,6 +133,12 @@ class EnviadorCorreo:
         if self.config.estudio.telefono:
             lineas.append(self.config.estudio.telefono)
         return "\n".join(l for l in lineas if l is not None)
+
+    @staticmethod
+    def _vencimiento(declaracion: DeclaracionF29, contribuyente: Contribuyente):
+        return declaracion.periodo.vencimiento_legal(
+            facturador_electronico=contribuyente.facturador_electronico
+        )
 
     def _instrucciones_pago(self, declaracion: DeclaracionF29) -> list[str]:
         pago = self.config.pago
@@ -183,7 +190,7 @@ class EnviadorCorreo:
               <div style="font-size:30px;font-weight:700;color:#10233a;">
                 {escape(pesos(declaracion.monto_a_pagar))}</div>
               <div style="font-size:13px;color:#5b6b7f;">Plazo: hasta el
-                {escape(fecha_larga(declaracion.periodo.vencimiento_legal()))}</div>
+                {escape(fecha_con_dia_semana(self._vencimiento(declaracion, contribuyente)))} (23:59 hrs)</div>
             </div>"""
         else:
             destacado = """

@@ -114,6 +114,8 @@ clientes:
     rut: "76.086.428-5"
     razon_social: "Comercial Acme SpA"
     nombre_contacto: "Ana"
+    # Define el plazo del F29: día 20 del mes siguiente en vez del día 12.
+    facturador_electronico: true
     correo:
       - "ana@acme.cl"
       - "contabilidad@acme.cl"

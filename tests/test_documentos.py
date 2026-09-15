@@ -35,40 +35,42 @@ def test_formato_de_fechas():
 # --------------------------------------------------------------------------- #
 
 
-def test_resumen_solo_trae_codigos_con_valor(config, declaracion_con_pago):
-    constructor = ConstructorDocumentos(config)
-    resumen = constructor._resumen(declaracion_con_pago)
-    codigos = [fila["codigo"] for fila in resumen]
-
-    assert codigos == ["563", "538", "537", "062", "048", "547"]
-    assert resumen[0]["glosa"] == "Base imponible (ventas netas del período)"
-    assert resumen[0]["monto"] == "$18.500.000"
-
-
-def test_resumen_respeta_la_glosa_que_venga_del_sii(config, declaracion_con_pago):
-    declaracion_con_pago.lineas[1].glosa = "TOTAL DEBITOS DEL PERIODO"
-    resumen = ConstructorDocumentos(config)._resumen(declaracion_con_pago)
-    assert any(f["glosa"] == "TOTAL DEBITOS DEL PERIODO" for f in resumen)
-
-
 def test_contexto_del_aviso(config, declaracion_con_pago):
     contexto = ConstructorDocumentos(config)._contexto(
         declaracion_con_pago, config.cliente("acme")
     )
-    assert contexto["monto_a_pagar"] == "$1.840.000"
     assert contexto["razon_social"] == "Comercial Acme SpA"
     assert contexto["rut"] == "76.086.428-5"
-    assert contexto["hay_que_pagar"]
-    assert contexto["vencimiento"] == "12 de septiembre de 2025"
-    assert "--acento" in contexto["css"]
+    assert contexto["resumen"].hay_que_pagar
+    assert contexto["resumen"].total_monto == Decimal(1840000)
+    assert "Lunes 22 de septiembre, 2025" in contexto["resumen"].vencimiento_texto
+    assert "23:59" in contexto["resumen"].vencimiento_texto
 
 
-def test_contexto_sin_pago_muestra_el_remanente(config, declaracion_sin_pago):
-    contexto = ConstructorDocumentos(config)._contexto(
+def test_el_contexto_trae_el_resumen_agrupado(config, declaracion_con_pago):
+    resumen = ConstructorDocumentos(config)._contexto(
+        declaracion_con_pago, config.cliente("acme")
+    )["resumen"]
+    titulos = [g.titulo for g in resumen.grupos]
+    assert "IVA" in titulos
+    assert "Retenciones" in titulos
+
+
+def test_contexto_sin_pago(config, declaracion_sin_pago):
+    resumen = ConstructorDocumentos(config)._contexto(
         declaracion_sin_pago, config.cliente("acme")
-    )
-    assert not contexto["hay_que_pagar"]
-    assert contexto["remanente"] == "$400.000"
+    )["resumen"]
+    assert not resumen.hay_que_pagar
+    assert resumen.total_monto == Decimal(0)
+
+
+def test_el_vencimiento_sigue_al_cliente(config, declaracion_con_pago):
+    cliente = config.cliente("acme")
+    cliente.facturador_electronico = False
+    texto = ConstructorDocumentos(config)._contexto(declaracion_con_pago, cliente)[
+        "resumen"
+    ].vencimiento_texto
+    assert "12 de septiembre" in texto
 
 
 def test_data_uri_de_imagen(tmp_path):
@@ -92,17 +94,18 @@ def test_genera_pdf_e_imagen(config, declaracion_con_pago):
     )
 
     pdf, imagen, html = Path(documentos.pdf), Path(documentos.imagen), Path(documentos.html)
-    assert pdf.exists() and pdf.stat().st_size > 5000
+    assert pdf.exists() and pdf.stat().st_size > 3000
     assert pdf.read_bytes().startswith(b"%PDF")
     assert imagen.exists() and imagen.read_bytes().startswith(b"\x89PNG")
     assert pdf.name == "F29-202508-760864285.pdf"
 
     contenido = html.read_text(encoding="utf-8")
     # El CSS no debe llegar escapado: rompería selectores y tipografías.
-    assert ".ficha > div" in contenido
+    assert ".resumen tr.total td" in contenido
     assert "&gt;" not in contenido.split("</style>")[0]
-    assert "$1.840.000" in contenido
+    assert "1.840.000.-" in contenido          # formato contable, no $1.840.000
     assert "00-123-45678-90" in contenido
+    assert "TOTAL A PAGAR F29 AGOSTO 2025" in contenido
 
 
 @requiere_chromium
@@ -111,17 +114,18 @@ def test_el_aviso_sin_pago_no_muestra_datos_bancarios(config, declaracion_sin_pa
         declaracion_sin_pago, config.cliente("acme"), guardar_html=True
     )
     contenido = Path(documentos.html).read_text(encoding="utf-8")
-    assert "Sin pago asociado" in contenido
     assert "00-123-45678-90" not in contenido
+    assert "Fecha de vencimiento" not in contenido
 
 
 @requiere_chromium
-def test_incrusta_la_captura_del_sii(config, declaracion_con_pago, tmp_path):
-    captura = tmp_path / "comprobante.png"
-    captura.write_bytes(b"\x89PNG\r\n\x1a\n falso")
+def test_la_propuesta_sale_con_advertencia_en_el_documento(config, declaracion_con_pago):
+    from bringmef29.modelos import PROPUESTA
+
+    declaracion_con_pago.procedencia = PROPUESTA
     documentos = ConstructorDocumentos(config).construir(
-        declaracion_con_pago, config.cliente("acme"), captura_sii=str(captura), guardar_html=True
+        declaracion_con_pago, config.cliente("acme"), guardar_html=True
     )
     contenido = Path(documentos.html).read_text(encoding="utf-8")
-    assert "Comprobante en el SII" in contenido
-    assert "data:image/png;base64," in contenido
+    assert "propuesta del SII" in contenido
+    assert "advertencia" in contenido

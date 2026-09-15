@@ -15,10 +15,12 @@ from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-from ..config import Config, cargar_catalogo
+from .. import resumen as armador_resumen
+from ..calendario import fecha_con_dia_semana
+from ..config import Config
 from ..modelos import Contribuyente, DeclaracionF29
 from ..sii.f29_navegador import ruta_chromium
-from .formato import fecha_larga, pesos
+from .formato import fecha_larga
 
 _log = logging.getLogger(__name__)
 
@@ -39,9 +41,9 @@ class Documentos:
 class ConstructorDocumentos:
     """Genera los documentos del aviso a partir de una declaración."""
 
-    def __init__(self, config: Config, *, catalogo: dict | None = None) -> None:
+    def __init__(self, config: Config, *, layout: dict | None = None) -> None:
         self.config = config
-        self.catalogo = catalogo if catalogo is not None else cargar_catalogo()
+        self.layout = layout if layout is not None else armador_resumen.cargar_layout()
         self.entorno = Environment(
             loader=FileSystemLoader(str(DIR_RECURSOS)),
             autoescape=select_autoescape(["html", "xml", "j2"]),
@@ -67,8 +69,10 @@ class ConstructorDocumentos:
         carpeta.mkdir(parents=True, exist_ok=True)
 
         contexto = self._contexto(declaracion, contribuyente, captura_sii=captura_sii)
-        html_aviso = self.entorno.get_template("aviso.html.j2").render(**contexto)
-        html_tarjeta = self.entorno.get_template("tarjeta.html.j2").render(**contexto)
+        plantilla = self.entorno.get_template("aviso.html.j2")
+        html_aviso = plantilla.render(**contexto)
+        # La imagen es la misma tabla, con el cuerpo en modo "imagen".
+        html_imagen = plantilla.render(**contexto).replace("<body>", '<body class="imagen">')
 
         base = f"F29-{declaracion.periodo.codigo}-{declaracion.rut.sin_formato}"
         documentos = Documentos()
@@ -79,7 +83,7 @@ class ConstructorDocumentos:
 
         with _pagina_chromium(self.config.sii.ruta_chromium) as pagina:
             documentos.pdf = self._a_pdf(pagina, html_aviso, carpeta / f"{base}.pdf")
-            documentos.imagen = self._a_png(pagina, html_tarjeta, carpeta / f"{base}.png")
+            documentos.imagen = self._a_png(pagina, html_imagen, carpeta / f"{base}.png")
         return documentos
 
     # -- contexto de plantilla ---------------------------------------------
@@ -87,11 +91,14 @@ class ConstructorDocumentos:
         self, declaracion: DeclaracionF29, contribuyente: Contribuyente, *, captura_sii: str = ""
     ) -> dict:
         razon_social = (
-            contribuyente.razon_social
-            or declaracion.razon_social
-            or contribuyente.alias
+            contribuyente.razon_social or declaracion.razon_social or contribuyente.alias
         )
-        remanente = declaracion.remanente_periodo_siguiente
+        vence = self._vencimiento(declaracion, contribuyente)
+        resumen = armador_resumen.construir(
+            declaracion,
+            layout=self.layout,
+            vencimiento_texto=f"{fecha_con_dia_semana(vence)} - 23:59 hrs",
+        )
         return {
             "estudio": self.config.estudio,
             "pago": self.config.pago,
@@ -103,41 +110,19 @@ class ConstructorDocumentos:
             "procedencia": declaracion.procedencia,
             "procedencia_glosa": declaracion.procedencia_glosa,
             "es_propuesta_del_sii": declaracion.es_propuesta_del_sii,
-            "hay_que_pagar": declaracion.hay_que_pagar,
-            "monto_a_pagar": pesos(declaracion.monto_a_pagar),
-            "remanente": pesos(remanente) if remanente and remanente > 0 else "",
-            "vencimiento": fecha_larga(self._vencimiento(declaracion)),
+            "resumen": resumen,
+            "monto": armador_resumen.monto_contable,
             "emitido": fecha_larga(date.today()),
-            "resumen": self._resumen(declaracion),
             "css": (DIR_RECURSOS / "aviso.css").read_text(encoding="utf-8"),
             "logo_uri": _a_data_uri(self.config.estudio.logo),
             "captura_uri": _a_data_uri(captura_sii),
             "contacto": contribuyente.nombre_contacto,
         }
 
-    def _vencimiento(self, declaracion: DeclaracionF29) -> date:
-        return declaracion.periodo.vencimiento_legal()
-
-    def _resumen(self, declaracion: DeclaracionF29) -> list[dict]:
-        """Filas del resumen: los códigos destacados que traiga la declaración."""
-        glosas: dict[str, str] = self.catalogo.get("glosas", {})
-        destacados: list[str] = self.catalogo.get("destacados", [])
-        indice = {linea.codigo_normalizado: linea for linea in declaracion.lineas}
-
-        filas = []
-        for codigo in destacados:
-            clave = str(codigo).lstrip("0") or "0"
-            linea = indice.get(clave)
-            if linea is None or linea.valor == 0:
-                continue
-            filas.append(
-                {
-                    "codigo": str(codigo).zfill(3),
-                    "glosa": linea.glosa or glosas.get(str(codigo), f"Código {codigo}"),
-                    "monto": pesos(linea.valor),
-                }
-            )
-        return filas
+    def _vencimiento(self, declaracion: DeclaracionF29, contribuyente: Contribuyente) -> date:
+        return declaracion.periodo.vencimiento_legal(
+            facturador_electronico=contribuyente.facturador_electronico
+        )
 
     # -- render -------------------------------------------------------------
     @staticmethod
@@ -156,9 +141,10 @@ class ConstructorDocumentos:
     @staticmethod
     def _a_png(pagina, html: str, destino: Path) -> str:
         pagina.emulate_media(media="screen")
-        pagina.set_viewport_size({"width": 1080, "height": 1080})
+        pagina.set_viewport_size({"width": 820, "height": 900})
         pagina.set_content(html, wait_until="load")
-        pagina.screenshot(path=str(destino))
+        # full_page deja la tabla completa aunque sea más alta que la ventana.
+        pagina.screenshot(path=str(destino), full_page=True)
         _log.info("Imagen para WhatsApp generada en %s", destino)
         return str(destino)
 

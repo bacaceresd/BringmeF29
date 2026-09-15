@@ -1,149 +1,114 @@
-:root {
-  --tinta: #10233a;
-  --tinta-suave: #5b6b7f;
-  --linea: #dde4ec;
-  --fondo-suave: #f4f7fb;
-  --acento: #0b5fa5;
-  --acento-fondo: #e8f1fa;
-  --alerta: #8a5100;
-  --alerta-fondo: #fdf3e3;
-  --ok: #1f6b46;
-  --ok-fondo: #e9f5ee;
-}
+/* Aviso del F29: una tabla y nada más. Se imprime en A4 y se exporta como PNG. */
 
-* { box-sizing: border-box; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
-@page {
-  size: A4;
-  margin: 14mm 13mm;
-}
+@page { size: A4; margin: 16mm 15mm; }
 
 body {
-  margin: 0;
   font-family: "Helvetica Neue", Helvetica, Arial, "Liberation Sans", sans-serif;
-  color: var(--tinta);
-  font-size: 10.5pt;
-  line-height: 1.45;
+  color: #1a1a1a;
   background: #fff;
+  font-size: 11pt;
+  line-height: 1.45;
   -webkit-print-color-adjust: exact;
   print-color-adjust: exact;
 }
 
-.hoja { max-width: 190mm; margin: 0 auto; }
+.hoja { max-width: 180mm; margin: 0 auto; padding: 0; }
 
-/* --- encabezado --- */
-.encabezado {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
-  padding-bottom: 10px;
-  border-bottom: 2px solid var(--acento);
+/* --- cabecera --- */
+.cabecera {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding-bottom: 10px; border-bottom: 1px solid #d8d8d8;
 }
-.marca { display: flex; align-items: center; gap: 12px; }
-.logo { max-height: 52px; max-width: 170px; object-fit: contain; }
-.estudio { font-size: 13pt; font-weight: 700; letter-spacing: .2px; }
-.estudio-contacto { font-size: 8.5pt; color: var(--tinta-suave); }
-.sello { text-align: right; }
-.sello-titulo {
-  font-size: 8pt; text-transform: uppercase; letter-spacing: 1.4px;
-  color: var(--tinta-suave);
-}
-.sello-periodo { font-size: 13pt; font-weight: 700; color: var(--acento); }
+.logo { max-height: 42px; max-width: 160px; object-fit: contain; display: block; }
+.estudio { font-size: 13pt; font-weight: 700; }
+.periodo { font-size: 11pt; font-weight: 600; color: #555; white-space: nowrap; }
 
-/* --- títulos --- */
-.titulo { font-size: 18pt; margin: 18px 0 2px; letter-spacing: -.3px; }
-.bajada { margin: 0 0 16px; color: var(--tinta-suave); font-size: 9.5pt; }
-
-h2 {
-  font-size: 10pt; text-transform: uppercase; letter-spacing: 1px;
-  color: var(--tinta-suave); margin: 0 0 8px;
-}
-
-/* --- ficha del contribuyente --- */
-.ficha {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px 18px;
-  background: var(--fondo-suave);
-  border: 1px solid var(--linea);
-  border-radius: 8px;
-  padding: 12px 14px;
-  margin-bottom: 18px;
-}
-.ficha > div { display: flex; flex-direction: column; min-width: 0; }
-.ficha > div.ancho { grid-column: span 2; }
-.etiqueta {
-  font-size: 7.5pt; text-transform: uppercase; letter-spacing: .8px;
-  color: var(--tinta-suave);
-}
-.valor { font-size: 10.5pt; font-weight: 600; word-break: break-word; }
-
-/* --- monto destacado --- */
-.monto {
-  background: var(--alerta-fondo);
-  border: 1px solid #f0dcb8;
-  border-left: 5px solid var(--alerta);
-  border-radius: 8px;
-  padding: 14px 18px;
-  margin-bottom: 20px;
-}
-.monto.sin-pago {
-  background: var(--ok-fondo);
-  border-color: #cfe7da;
-  border-left-color: var(--ok);
-}
-.monto-etiqueta {
-  font-size: 8pt; text-transform: uppercase; letter-spacing: 1.2px;
-  color: var(--alerta); font-weight: 700;
-}
-.monto.sin-pago .monto-etiqueta { color: var(--ok); }
-.monto-cifra { font-size: 30pt; font-weight: 700; line-height: 1.1; letter-spacing: -1px; }
-.monto-plazo { font-size: 9.5pt; color: var(--tinta-suave); }
-
-/* --- bloques y tablas --- */
-.bloque { margin-bottom: 18px; page-break-inside: avoid; }
-.tabla { width: 100%; border-collapse: collapse; font-size: 9.5pt; }
-.tabla th {
-  text-align: left; font-size: 7.5pt; text-transform: uppercase; letter-spacing: .8px;
-  color: var(--tinta-suave); border-bottom: 1.5px solid var(--linea);
-  padding: 6px 8px; font-weight: 600;
-}
-.tabla td { padding: 6px 8px; border-bottom: 1px solid var(--linea); vertical-align: top; }
-.tabla tbody tr:nth-child(even) { background: #fafcfe; }
-.tabla .cod { width: 62px; color: var(--tinta-suave); font-variant-numeric: tabular-nums; }
-.tabla .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.datos-pago td:first-child { width: 42%; color: var(--tinta-suave); }
-
-.aviso-sii { background: var(--acento-fondo); border-radius: 8px; padding: 12px 14px; }
-.aviso-sii p { margin: 0 0 6px; font-size: 9.5pt; }
-.enlace { color: var(--acento); font-size: 9pt; word-break: break-all; }
-
-.captura {
-  width: 100%;
-  border: 1px solid var(--linea);
-  border-radius: 6px;
-}
+.quien { padding: 14px 0 18px; }
+.razon { font-size: 15pt; font-weight: 700; letter-spacing: -.2px; }
+.rut { font-size: 10pt; color: #666; margin-top: 1px; }
 
 .advertencia {
-  background: #fdecec;
-  border: 1px solid #f0c2c2;
-  border-left: 5px solid #a32020;
-  border-radius: 8px;
-  padding: 12px 16px;
-  margin-bottom: 18px;
-  font-size: 9.5pt;
-  color: #6d1616;
+  background: #fdecec; border-left: 4px solid #a32020;
+  padding: 10px 14px; margin-bottom: 16px; font-size: 10pt; color: #6d1616;
 }
 
-.nota {
-  font-size: 9pt; color: var(--tinta-suave);
-  background: var(--fondo-suave); border-radius: 6px; padding: 10px 12px;
+/* --- la tabla --- */
+.resumen { width: 100%; border-collapse: collapse; }
+
+.titulo-grupo th {
+  text-align: left; font-size: 11.5pt; font-weight: 700;
+  padding: 16px 0 6px; border-bottom: 1.5px solid #1a1a1a;
+}
+.resumen tbody:first-child .titulo-grupo th { padding-top: 0; }
+
+.resumen td { padding: 4.5px 0; vertical-align: baseline; }
+.resumen .glosa { padding-right: 16px; }
+.resumen .signo {
+  display: inline-block; width: 24px; color: #888;
+  font-variant-numeric: tabular-nums;
+}
+.resumen .monto {
+  text-align: right; white-space: nowrap;
+  font-variant-numeric: tabular-nums; font-feature-settings: "tnum";
 }
 
+.resumen tr.total td { font-weight: 700; border-top: 1px solid #c8c8c8; padding-top: 6px; }
+.resumen tr.destacar td { font-weight: 700; }
+.resumen tr.separador td { height: 9px; padding: 0; }
+.nota-grupo td { font-size: 10pt; color: #666; font-style: italic; padding-top: 6px; }
+
+/* --- total final --- */
+.total-final {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 16px;
+  margin-top: 26px; padding: 14px 16px;
+  background: #fdf3e3; border-left: 5px solid #8a5100;
+}
+.total-final.sin-pago { background: #e9f5ee; border-left-color: #1f6b46; }
+.total-glosa { font-size: 11pt; font-weight: 700; letter-spacing: .2px; }
+.total-monto {
+  font-size: 19pt; font-weight: 700; white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.vencimiento { margin-top: 10px; font-size: 10.5pt; }
+
+.descuadre {
+  margin-top: 16px; padding: 10px 14px; font-size: 10pt;
+  background: #fdf6e3; border-left: 4px solid #8a6d00; color: #5c4900;
+}
+.descuadre ul { margin: 4px 0 0 18px; }
+
+/* --- pago --- */
+.pago { margin-top: 24px; padding-top: 14px; border-top: 1px solid #d8d8d8; }
+.pago-titulo {
+  font-size: 9.5pt; text-transform: uppercase; letter-spacing: 1px;
+  color: #666; font-weight: 600; margin-bottom: 6px;
+}
+.pago-tabla { width: 100%; border-collapse: collapse; font-size: 10.5pt; }
+.pago-tabla td { padding: 3px 0; }
+.pago-tabla td:first-child { width: 90px; color: #666; }
+.pago-sii { margin-top: 8px; font-size: 10pt; color: #444; word-break: break-all; }
+
+/* --- pie --- */
 .pie {
-  margin-top: 22px; padding-top: 10px;
-  border-top: 1px solid var(--linea);
-  font-size: 8pt; color: var(--tinta-suave);
+  margin-top: 26px; padding-top: 10px; border-top: 1px solid #e4e4e4;
+  font-size: 8.5pt; color: #888;
+  display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap;
 }
-.pie p { margin: 0 0 2px; }
+.pie-proc { color: #aaa; }
+
+/* --- versión imagen (PNG para WhatsApp) --- */
+body.imagen { background: #f0f2f5; padding: 26px 22px; font-size: 13px; }
+body.imagen .hoja {
+  max-width: 720px; background: #fff; padding: 30px 32px;
+  border-radius: 12px; box-shadow: 0 2px 14px rgba(0,0,0,.10);
+}
+body.imagen .razon { font-size: 21px; }
+body.imagen .periodo, body.imagen .rut { font-size: 13px; }
+body.imagen .estudio { font-size: 17px; }
+body.imagen .titulo-grupo th { font-size: 15px; }
+body.imagen .total-glosa { font-size: 14px; }
+body.imagen .total-monto { font-size: 26px; }
+body.imagen .pie { font-size: 11px; }

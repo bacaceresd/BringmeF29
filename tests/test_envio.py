@@ -29,7 +29,7 @@ def test_correo_se_compone_sin_enviar(config, declaracion_con_pago, tmp_path):
     cuerpo = mensaje.get_body(preferencelist=("plain",)).get_content()
     assert "$1.840.000" in cuerpo
     assert "76.086.428-5" in cuerpo
-    assert "12 de septiembre de 2025" in cuerpo
+    assert "Lunes 22 de septiembre, 2025" in cuerpo
     assert "00-123-45678-90" in cuerpo
 
     adjuntos = [p.get_filename() for p in mensaje.iter_attachments()]
@@ -126,7 +126,7 @@ def test_mensaje_de_whatsapp_sin_pago(config, declaracion_sin_pago):
 def test_plantilla_de_mensaje_personalizada(config, declaracion_con_pago):
     config.whatsapp.plantilla_mensaje = "{nombre}: F29 {periodo} por {monto}, vence {vencimiento}."
     texto = EnviadorWhatsApp(config).redactar(declaracion_con_pago, config.cliente("acme"))
-    assert texto == "Ana: F29 Agosto 2025 por $1.840.000, vence 12 de septiembre de 2025."
+    assert texto == "Ana: F29 Agosto 2025 por $1.840.000, vence Lunes 22 de septiembre, 2025."
 
 
 def test_proveedor_enlace_no_envia_pero_entrega_el_link(config, declaracion_con_pago):

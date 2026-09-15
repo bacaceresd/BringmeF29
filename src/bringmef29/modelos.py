@@ -63,15 +63,27 @@ class Periodo:
     def ultimo_dia(self) -> date:
         return date(self.anio, self.mes, calendar.monthrange(self.anio, self.mes)[1])
 
-    def vencimiento_legal(self) -> date:
-        """Vencimiento habitual del F29: el día 12 del mes siguiente.
+    def vencimiento_legal(
+        self,
+        *,
+        facturador_electronico: bool = True,
+        feriados_extra: set[date] | None = None,
+    ) -> date:
+        """Vencimiento del F29: día 20 del mes siguiente para facturadores
+        electrónicos (día 12 en papel), corrido al día hábil siguiente cuando cae
+        sábado, domingo o feriado.
 
-        Es una referencia para el aviso, no una regla tributaria completa: el SII
-        amplía el plazo para facturadores electrónicos (día 20) y corre la fecha
-        cuando cae fin de semana o feriado.
+        Es una referencia para el aviso, no una resolución del SII: las prórrogas
+        puntuales y los feriados regionales se agregan con ``feriados_extra``.
         """
-        anio, mes = (self.anio + 1, 1) if self.mes == 12 else (self.anio, self.mes + 1)
-        return date(anio, mes, 12)
+        from .calendario import vencimiento_f29
+
+        return vencimiento_f29(
+            self.anio,
+            self.mes,
+            facturador_electronico=facturador_electronico,
+            feriados_extra=feriados_extra,
+        )
 
     def __str__(self) -> str:  # pragma: no cover - trivial
         return f"{self.anio}-{self.mes:02d}"
@@ -233,6 +245,8 @@ class Contribuyente:
     correo_copia: list[str] = field(default_factory=list)
     whatsapp: str = ""
     nombre_contacto: str = ""
+    # Define el plazo del F29: día 20 del mes siguiente en vez del día 12.
+    facturador_electronico: bool = True
     clave_sii: str | None = field(default=None, repr=False)
 
 

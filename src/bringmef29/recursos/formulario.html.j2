@@ -65,10 +65,10 @@
             {% endif %}
           </td>
           <td class="ct">
-            {% if linea.cantidad %}<span class="cod">{{ linea.cantidad.codigo }}</span>{{ monto(linea.cantidad.valor) }}{% endif %}
+            {% if linea.cantidad and (linea.cantidad.tiene_valor or formulario.completo) %}<span class="cod">{{ linea.cantidad.codigo }}</span>{{ monto(linea.cantidad.valor) }}{% endif %}
           </td>
           <td class="mt">
-            {% if linea.monto %}<span class="cod">{{ linea.monto.codigo }}</span>{{ monto(linea.monto.valor) }}{% endif %}
+            {% if linea.monto and (linea.monto.tiene_valor or formulario.completo) %}<span class="cod">{{ linea.monto.codigo }}</span>{{ monto(linea.monto.valor) }}{% endif %}
           </td>
           <td class="sg">{{ linea.signo }}</td>
         </tr>

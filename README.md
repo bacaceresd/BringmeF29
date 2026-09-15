@@ -78,19 +78,43 @@ Verás el navegador en pantalla, y al final la procedencia de lo que trajo:
 Si algo falla, queda una captura de pantalla en `.estado_sii/` con lo que el SII
 mostró en ese momento. Con eso se ajustan los selectores.
 
-## La pantalla
+## Las pantallas
 
 ```bash
 bringmef29 web
 ```
 
-Abre en tu navegador una pantalla con **Ingrese RUT** y **Clave tributaria**, trae el
-F29 del período y muestra la tabla. Escucha sólo en `127.0.0.1`: la clave va del
-formulario al proceso que la usa y nada más — no se guarda en disco, no entra a los
-logs y no sale del equipo. Desde ahí se descargan el PDF y la imagen.
+Abre en tu navegador la aplicación local. No es un tablero: es una pantalla por
+cosa, y cada una tiene su dirección.
 
-Si prefieres la terminal, todo lo que hace la pantalla está también en los comandos
-de más abajo.
+| Pantalla | Dónde | Qué hace |
+|---|---|---|
+| Traer F29 del SII | `/` | **Ingrese RUT** y **Clave tributaria**, mes, año y qué formulario buscar |
+| Resumen | `/periodo?ref=…` | La tabla corta del período y la lista de documentos para descargar |
+| Formulario 29 | `/formulario?ref=…` | El F29 por secciones, en compacto o completo |
+| Consultas anteriores | `/historial` | Todo lo traído antes, lo más reciente arriba |
+| Códigos del F29 | `/codigos` | Los 215 códigos, con su línea, su sección y su efecto |
+
+Al traer el F29 se generan los cinco documentos de una vez y aparecen en el
+resumen, listos para descargar:
+
+- Imagen del resumen · **WhatsApp**
+- Resumen en PDF
+- Formulario F29 compacto · PDF
+- Formulario F29 completo · PDF
+- Formulario F29 completo · Excel
+
+Escucha sólo en `127.0.0.1`: la clave va del formulario al proceso que la usa y
+nada más — no se guarda en disco, no entra a los logs y no sale del equipo.
+
+### Qué cuenta como otra consulta
+
+Volver a traer exactamente lo mismo reemplaza la entrada del historial y la sube
+al primer lugar. Si cambió aunque sea un código, es otra consulta: se suma a la
+lista y la anterior queda intacta, con sus propios documentos.
+
+Si prefieres la terminal, todo lo que hacen las pantallas está también en los
+comandos de más abajo.
 
 ## Dos documentos, dos canales
 
@@ -523,7 +547,7 @@ clave, y no correr esto en un equipo compartido.
 
 ```bash
 pip install -e ".[dev]"
-pytest              # 271 pruebas
+pytest              # 281 pruebas
 pytest -k documentos   # sólo el armado del PDF y la imagen
 ```
 
@@ -537,7 +561,11 @@ y con dobles de prueba.
 src/bringmef29/
 ├── cli.py             Interfaz de línea de comandos
 ├── diagnostico.py     Qué falta antes de usarlo con un cliente
-├── web.py             Pantalla local de RUT y clave tributaria
+├── web/               La aplicación local: una pantalla por URL
+│   ├── servidor.py      Rutas, consulta y entrega de archivos
+│   ├── vistas.py        Las cinco pantallas
+│   ├── historial.py     Qué se consultó y cuándo
+│   └── estilos.py       La hoja de estilo compartida
 ├── flujo.py           Orquestador: del SII al aviso enviado
 ├── resumen.py         Arma la tabla corta que va por WhatsApp
 ├── formulario.py      Arma el F29 por secciones que va por correo

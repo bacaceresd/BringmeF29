@@ -289,9 +289,17 @@ def procesar(
 # --------------------------------------------------------------------------- #
 
 
-def guardar_declaracion(config: Config, declaracion: DeclaracionF29) -> str:
-    """Deja la declaración en JSON para auditoría y para reimprimir sin volver al SII."""
-    carpeta = config.directorio_salida / declaracion.rut.sin_formato / declaracion.periodo.codigo
+def guardar_declaracion(
+    config: Config, declaracion: DeclaracionF29, *, carpeta: Path | None = None
+) -> str:
+    """Deja la declaración en JSON para auditoría y para reimprimir sin volver al SII.
+
+    Con ``carpeta`` se escribe donde se pida; sin ella, en la del período.
+    """
+    carpeta = Path(
+        carpeta
+        or config.directorio_salida / declaracion.rut.sin_formato / declaracion.periodo.codigo
+    )
     carpeta.mkdir(parents=True, exist_ok=True)
     destino = carpeta / "declaracion.json"
     destino.write_text(

@@ -27,6 +27,59 @@ cuándo y a dónde.
 
 ---
 
+## Ponerlo a andar
+
+Cuatro pasos, en orden:
+
+```bash
+# 1. Instalar
+python3 -m venv .venv && source .venv/bin/activate
+pip install -e . && playwright install chromium
+
+# 2. Configurar
+cp config/clientes.example.yml config/clientes.yml   # y completarlo
+bringmef29 clave generar-maestra                     # exportar la línea que imprime
+
+# 3. Guardar la clave tributaria de un cliente
+bringmef29 clave guardar cliente-1
+
+# 4. Comprobar que todo está en su lugar
+bringmef29 diagnostico
+```
+
+El diagnóstico revisa lo que se puede revisar **sin la clave de nadie** y dice qué
+falta y cómo arreglarlo:
+
+```
+  ✓  Python                3.11.15
+  ✓  Chromium              /opt/pw-browsers/chromium
+  ✓  Configuración         2 cliente(s) en config/clientes.yml
+  ✓  Claves tributarias    2 cliente(s) con clave guardada
+  ✓  Correo                contacto@estudio.cl vía smtp.gmail.com
+  ✓  SII alcanzable        el formulario de login responde y calza
+```
+
+Ese último chequeo pide la página pública de login del SII y comprueba que siga
+teniendo el formulario que el programa espera. No envía credenciales.
+
+### La primera consulta real
+
+Lo único que el diagnóstico no puede probar es entrar a la cuenta de un
+contribuyente. Para eso hay que entrar:
+
+```bash
+bringmef29 traer cliente-1 -p 2026-08 --modo navegador --sin-headless -v
+```
+
+Verás el navegador en pantalla, y al final la procedencia de lo que trajo:
+
+```
+  ✓ Formulario    : Declaración guardada por el contribuyente (sin enviar)
+```
+
+Si algo falla, queda una captura de pantalla en `.estado_sii/` con lo que el SII
+mostró en ese momento. Con eso se ajustan los selectores.
+
 ## La pantalla
 
 ```bash
@@ -180,6 +233,9 @@ bringmef29 web
 # Qué es cada código del F29
 bringmef29 codigos 538
 
+# Revisar la instalación
+bringmef29 diagnostico
+
 # Ver los clientes configurados
 bringmef29 clientes
 
@@ -317,6 +373,15 @@ Verás el navegador en pantalla y, cuando algo falle, quedará una captura en
 `src/bringmef29/sii/f29_navegador.py` o los endpoints en
 `src/bringmef29/sii/f29_api.py`. Mientras tanto, `--desde-archivo` permite
 reemitir avisos con lo ya descargado.
+
+**Lo que está verificado contra el sitio real.** El formulario de login del SII es
+público, así que se pudo comprobar sin credenciales: los campos que el programa
+llena (`#rutcntr`, `#clave`, `#bt_ingresar`) son los que el sitio tiene, los campos
+que viaja el POST (`rut`, `dv`, `referencia`, `411`, `rutcntr`, `clave`) son los que
+el formulario envía, y el RUT se puede escribir con o sin puntos porque el propio
+SII los limpia. Los mensajes de error que el programa reconoce salen de su
+JavaScript. Lo que **no** se puede verificar sin entrar es la sesión de un
+contribuyente concreto: eso lo prueba `bringmef29 traer`.
 
 **Dos límites conocidos.** Si la cuenta tiene segundo factor activado, el login
 automático se detiene y hay que completarlo con `--sin-headless`. Y los códigos
@@ -460,7 +525,7 @@ clave, y no correr esto en un equipo compartido.
 
 ```bash
 pip install -e ".[dev]"
-pytest              # 253 pruebas
+pytest              # 271 pruebas
 pytest -k documentos   # sólo el armado del PDF y la imagen
 ```
 
@@ -473,6 +538,7 @@ y con dobles de prueba.
 ```
 src/bringmef29/
 ├── cli.py             Interfaz de línea de comandos
+├── diagnostico.py     Qué falta antes de usarlo con un cliente
 ├── web.py             Pantalla local de RUT y clave tributaria
 ├── flujo.py           Orquestador: del SII al aviso enviado
 ├── resumen.py         Arma la tabla corta que va por WhatsApp

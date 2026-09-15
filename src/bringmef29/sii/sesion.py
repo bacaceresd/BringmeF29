@@ -29,7 +29,8 @@ AGENTE = (
     "(KHTML, like Gecko) Chrome/124.0 Safari/537.36"
 )
 
-# Frases que el SII muestra cuando las credenciales no sirven.
+# Mensajes que el SII muestra ante credenciales o RUT inválidos. Salen de su
+# propio JavaScript de login (AUT2000/js/AutAll.js) y de las pantallas del CGI.
 _SENALES_DE_FALLA = (
     "clave incorrecta",
     "rut o clave",
@@ -39,6 +40,13 @@ _SENALES_DE_FALLA = (
     "clave bloqueada",
     "intentos fallidos",
     "debe ingresar su clave",
+    "por favor, ingrese rut y clave",
+    "rut invalido",
+    "rut inválido",
+    "el rut ingresado no es valido",
+    "digito verificador incorrecto",
+    "dígito verificador incorrecto",
+    "debe ingresar el rut completo",
 )
 # Frases que sólo aparecen cuando ya estás dentro.
 _SENALES_DE_EXITO = (

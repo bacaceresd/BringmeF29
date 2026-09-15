@@ -121,6 +121,18 @@ def construir_parser() -> argparse.ArgumentParser:
     p_web.add_argument("--puerto", type=int, default=8029, help="Puerto local (por defecto 8029).")
     p_web.add_argument("--sin-abrir", action="store_true", help="No abre el navegador solo.")
 
+    # -- diagnóstico ---------------------------------------------------------
+    p_diag = sub.add_parser(
+        "diagnostico",
+        help="Revisa que todo esté listo antes de usarlo con un cliente.",
+        description=(
+            "Comprueba lo que se puede comprobar sin la clave de nadie: Chromium, "
+            "configuración, claves guardadas, correo, WhatsApp y si el SII responde "
+            "desde este equipo."
+        ),
+    )
+    p_diag.add_argument("--sin-red", action="store_true", help="No consulta si el SII responde.")
+
     # -- catálogo de códigos -------------------------------------------------
     p_cod = sub.add_parser(
         "codigos",
@@ -216,6 +228,8 @@ def _despachar(args: argparse.Namespace) -> int:
 
     if args.comando == "codigos":
         return _comando_codigos(args)
+    if args.comando == "diagnostico":
+        return _comando_diagnostico(args)
 
     config = cargar(args.config)
     if args.comando == "web":
@@ -359,6 +373,34 @@ def _comando_lote(config: Config, args: argparse.Namespace) -> int:
         print(f"\nTerminó con problemas en: {', '.join(fallidos)}\n", file=sys.stderr)
         return 1
     print("\n✓ Lote completo sin incidencias.\n")
+    return 0
+
+
+def _comando_diagnostico(args: argparse.Namespace) -> int:
+    from .diagnostico import BIEN, MAL, revisar
+
+    print("\n  Revisando la instalación\n")
+    chequeos = revisar(args.config, con_red=not args.sin_red)
+    ancho = max(len(c.nombre) for c in chequeos)
+
+    for chequeo in chequeos:
+        print(f"  {chequeo.glifo}  {chequeo.nombre.ljust(ancho)}  {chequeo.detalle}")
+        if chequeo.arreglo and chequeo.estado != BIEN:
+            print(f"     {' ' * ancho}  → {chequeo.arreglo}")
+
+    fallas = [c for c in chequeos if c.estado == MAL]
+    avisos = [c for c in chequeos if c.estado not in (BIEN, MAL)]
+
+    print()
+    if fallas:
+        print(f"  {len(fallas)} cosa(s) por resolver antes de usarlo con un cliente.\n")
+        return 1
+    if avisos:
+        print(f"  Listo para consultar el SII. {len(avisos)} aviso(s) sin bloquear nada.\n")
+    else:
+        print("  Todo en orden.\n")
+    print("  El acceso a la cuenta de un contribuyente sólo se puede probar entrando:")
+    print("    bringmef29 traer <cliente> --modo navegador --sin-headless -v\n")
     return 0
 
 

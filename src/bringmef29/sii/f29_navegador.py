@@ -62,13 +62,8 @@ _RUTAS_CHROMIUM_CONOCIDAS = (
     "/usr/bin/google-chrome",
 )
 
-_TEXTOS_CREDENCIAL_INVALIDA = (
-    "clave incorrecta",
-    "datos ingresados no son correctos",
-    "rut o clave",
-    "clave bloqueada",
-    "usuario bloqueado",
-)
+# Las mismas señales que usa la vía HTTP: una sola lista que mantener.
+from .sesion import _SENALES_DE_FALLA as _TEXTOS_CREDENCIAL_INVALIDA
 
 # Cómo entrar al formulario que el contribuyente guardó. Se prueban en orden y
 # ninguno menciona la propuesta: entrar por ahí traería los datos del SII.

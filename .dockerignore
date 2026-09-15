@@ -1,0 +1,13 @@
+.git
+.venv
+.pytest_cache
+__pycache__
+*.pyc
+salida
+.estado_sii
+.secretos
+.env
+tests
+plantillas
+config/clientes.yml
+config/clientes.*.yml

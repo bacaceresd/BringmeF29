@@ -1,0 +1,35 @@
+# BringmeF29 — configuración del despliegue publicado.
+#
+# Este archivo SÍ va al repositorio, así que no lleva ni un dato de nadie: ni
+# clientes, ni casillas de correo, ni secretos. Publicada, la aplicación se usa
+# escribiendo el RUT y la clave tributaria en la pantalla, y los documentos se
+# descargan desde ahí mismo.
+#
+# El envío por correo y WhatsApp queda fuera a propósito: mandarle el aviso al
+# cliente es algo que haces desde tu equipo, con config/clientes.yml, donde las
+# credenciales de tu correo no tienen que salir a ninguna parte.
+
+estudio:
+  nombre: "BC Consulting"
+
+pago:
+  modo: "sii"
+  url_pago_sii: "https://www.sii.cl/servicios_online/1044-.html"
+
+whatsapp:
+  proveedor: "enlace"
+
+sii:
+  fuente: "guardada"        # el F29 que guardaste tú, nunca la propuesta del SII
+  modo: "navegador"         # la vía api sólo ve declaraciones ya presentadas
+  headless: true
+  timeout_ms: 60000
+  directorio_estado: "/tmp/estado_sii"
+  guardar_capturas: true
+
+# En un contenedor sólo /tmp acepta escritura. Se puede pisar con BRINGMEF29_SALIDA.
+directorio_salida: "/tmp/salida"
+ruta_almacen_claves: "/tmp/secretos/claves.json"
+
+# Sin clientes: publicada, la aplicación no guarda la libreta de nadie.
+clientes: []

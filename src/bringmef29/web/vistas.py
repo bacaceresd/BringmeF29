@@ -38,6 +38,36 @@ def pagina(titulo: str, cuerpo: str, *, volver: str = "", accion: str = "") -> b
 
 
 # --------------------------------------------------------------------------- #
+# 0. Entrar (sólo en el despliegue publicado)
+# --------------------------------------------------------------------------- #
+
+
+def entrar(*, error: str = "", bloqueado: bool = False) -> bytes:
+    """La puerta del despliegue publicado. En local no se usa."""
+    return pagina("Trae F29", f"""
+      {f'<p class="aviso error">{e(error)}</p>' if error else ''}
+      <div>
+        <p class="rotulo">Acceso</p>
+        <form method="post" action="/entrar">
+          <div class="grupo">
+            <div class="fila">
+              <label class="k" for="acceso">Contraseña</label>
+              <span class="v"><input id="acceso" name="acceso" type="password"
+                     autocomplete="current-password" required autofocus
+                     {"disabled" if bloqueado else ""}></span>
+            </div>
+          </div>
+          <p style="padding-top:22px"></p>
+          <button type="submit" class="principal" {"disabled" if bloqueado else ""}>Entrar</button>
+        </form>
+      </div>
+      <p class="nota">
+        Esta es la contraseña de la aplicación, no la clave tributaria de nadie.
+      </p>
+    """)
+
+
+# --------------------------------------------------------------------------- #
 # 1. Consultar
 # --------------------------------------------------------------------------- #
 

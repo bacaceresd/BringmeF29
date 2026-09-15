@@ -116,6 +116,44 @@ lista y la anterior queda intacta, con sus propios documentos.
 Si prefieres la terminal, todo lo que hacen las pantallas está también en los
 comandos de más abajo.
 
+## Publicarla en Firebase
+
+En tu equipo la clave tributaria no sale del computador. Publicada, sí viaja: va
+por internet hasta un servidor de Google. Vale la pena saberlo antes de decidir,
+porque son claves de terceros y hay tres cosas que cambian:
+
+- La clave de cada cliente pasa por la red y por un servidor que administra Google.
+- El SII ve los ingresos viniendo desde una IP de centro de datos y no desde tu
+  oficina. Es justo el patrón que gatilla bloqueos.
+- Una dirección pública con un formulario de RUT y clave del SII es un blanco.
+  Por eso este modo **no arranca sin contraseña de acceso**.
+
+Si aun así la quieres publicada:
+
+```bash
+bash desplegar.sh
+```
+
+Se corre desde tu computador, con tu sesión de Google: las credenciales no salen
+de ahí. El script crea el proyecto «Trae F29», habilita lo que hace falta, te
+pide una contraseña de acceso y la guarda en Secret Manager, construye la imagen
+y la deja andando en Cloud Run (Santiago), con Firebase Hosting por delante.
+
+Hace falta el plan Blaze, porque Cloud Run y Secret Manager no están en el
+gratuito. Con el uso de un contador el costo es prácticamente cero: el servicio
+se apaga solo cuando nadie lo usa.
+
+| | Local (`bringmef29 web`) | Publicada (`desplegar.sh`) |
+|---|---|---|
+| Dónde escucha | `127.0.0.1`, sólo tu equipo | Internet, por HTTPS |
+| La clave tributaria | No sale del computador | Viaja hasta el servidor |
+| Contraseña | No pide | Obligatoria, mínimo 12 caracteres |
+| Correo y WhatsApp | Sí | No: eso se hace desde tu equipo |
+| Clientes guardados | `config/clientes.yml` | Ninguno; el RUT se escribe a mano |
+
+La imagen no lleva `config/clientes.yml` ni las credenciales de tu correo: usa
+`config/nube.yml`, que no tiene un dato de nadie.
+
 ## Dos documentos, dos canales
 
 | | Qué es | Va por |
@@ -547,7 +585,7 @@ clave, y no correr esto en un equipo compartido.
 
 ```bash
 pip install -e ".[dev]"
-pytest              # 281 pruebas
+pytest              # 296 pruebas
 pytest -k documentos   # sólo el armado del PDF y la imagen
 ```
 
@@ -565,6 +603,7 @@ src/bringmef29/
 │   ├── servidor.py      Rutas, consulta y entrega de archivos
 │   ├── vistas.py        Las cinco pantallas
 │   ├── historial.py     Qué se consultó y cuándo
+│   ├── nube.py          La misma aplicación publicada, detrás de contraseña
 │   └── estilos.py       La hoja de estilo compartida
 ├── flujo.py           Orquestador: del SII al aviso enviado
 ├── resumen.py         Arma la tabla corta que va por WhatsApp

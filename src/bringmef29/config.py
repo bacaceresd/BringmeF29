@@ -181,7 +181,9 @@ def desde_dict(datos: dict, ruta_archivo: Path | None = None) -> Config:
     sii.setdefault("ruta_chromium", os.environ.get("BRINGMEF29_CHROMIUM", ""))
     config.sii = ConfigSii(**sii)
 
-    if salida := datos.get("directorio_salida"):
+    # En un contenedor el disco viene de sólo lectura salvo /tmp, así que el
+    # directorio de salida tiene que poder fijarse desde el entorno.
+    if salida := (os.environ.get("BRINGMEF29_SALIDA") or datos.get("directorio_salida")):
         config.directorio_salida = Path(str(salida))
     if almacen := datos.get("ruta_almacen_claves"):
         config.ruta_almacen_claves = Path(str(almacen))

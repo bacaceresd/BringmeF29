@@ -121,6 +121,19 @@ def construir_parser() -> argparse.ArgumentParser:
     p_web.add_argument("--puerto", type=int, default=8029, help="Puerto local (por defecto 8029).")
     p_web.add_argument("--sin-abrir", action="store_true", help="No abre el navegador solo.")
 
+    # -- la misma aplicación, publicada --------------------------------------
+    p_pub = sub.add_parser(
+        "publicar",
+        help="Sirve la aplicación desde un contenedor, detrás de contraseña.",
+        description=(
+            "Levanta la aplicación para un despliegue (Cloud Run y similares): escucha en "
+            "el puerto que indique PORT, exige HTTPS y pide la contraseña de "
+            "BRINGMEF29_ACCESO antes de mostrar nada. Sin esa contraseña no arranca. "
+            "Para tu propio equipo usa «web», que no pide contraseña y no sale de 127.0.0.1."
+        ),
+    )
+    p_pub.add_argument("--puerto", type=int, default=0, help="Puerto (por defecto, el de PORT).")
+
     # -- diagnóstico ---------------------------------------------------------
     p_diag = sub.add_parser(
         "diagnostico",
@@ -236,6 +249,15 @@ def _despachar(args: argparse.Namespace) -> int:
         from .web import servir
 
         servir(config, puerto=args.puerto, abrir=not args.sin_abrir)
+        return 0
+    if args.comando == "publicar":
+        from .web.nube import ErrorDespliegue, servir as publicar
+
+        try:
+            publicar(config, puerto=args.puerto or None)
+        except ErrorDespliegue as exc:
+            print(f"\n  ✗ {exc}\n", file=sys.stderr)
+            return 2
         return 0
     if args.comando == "clientes":
         return _comando_clientes(config)

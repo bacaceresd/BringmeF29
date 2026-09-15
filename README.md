@@ -32,19 +32,17 @@ cuándo y a dónde.
 Cuatro pasos, en orden:
 
 ```bash
-# 1. Instalar
-python3 -m venv .venv && source .venv/bin/activate
-pip install -e . && playwright install chromium
+bash instalar.sh
+```
 
-# 2. Configurar
-cp config/clientes.example.yml config/clientes.yml   # y completarlo
-bringmef29 clave generar-maestra                     # exportar la línea que imprime
+Eso crea el entorno, instala las dependencias y Chromium, copia la configuración y
+genera la clave maestra. Después:
 
-# 3. Guardar la clave tributaria de un cliente
-bringmef29 clave guardar cliente-1
-
-# 4. Comprobar que todo está en su lugar
-bringmef29 diagnostico
+```bash
+source .venv/bin/activate
+nano config/clientes.yml            # tus datos y los de tus clientes
+bringmef29 clave guardar cliente-1  # la clave tributaria del cliente
+bringmef29 diagnostico              # comprueba que todo esté en su lugar
 ```
 
 El diagnóstico revisa lo que se puede revisar **sin la clave de nadie** y dice qué

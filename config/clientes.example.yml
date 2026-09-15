@@ -110,26 +110,28 @@ ruta_almacen_claves: ".secretos/claves.json"
 # Clientes
 # --------------------------------------------------------------------------- #
 clientes:
-  - alias: "acme"
+  # Una entrada por contribuyente. El alias es el nombre corto con el que lo
+  # llamas en la línea de comandos; la razón social es la que sale en el aviso.
+  - alias: "cliente-1"
+    razon_social: "Razón social del contribuyente"
     rut: "76.086.428-5"
-    razon_social: "Comercial Acme SpA"
-    nombre_contacto: "Ana"
+    nombre_contacto: "Nombre de quien recibe el aviso"
     # Define el plazo del F29: día 20 del mes siguiente en vez del día 12.
     facturador_electronico: true
     correo:
-      - "ana@acme.cl"
-      - "contabilidad@acme.cl"
+      - "contacto@empresa.cl"
+      - "contabilidad@empresa.cl"
     correo_copia: []
     whatsapp: "+56 9 1111 2222"
     # La clave tributaria NO se escribe aquí. Guárdala con:
-    #   bringmef29 clave guardar acme
-    # o expórtala como  BRINGMEF29_CLAVE_ACME
+    #   bringmef29 clave guardar cliente-1
+    # o expórtala como  BRINGMEF29_CLAVE_CLIENTE_1
     # Si prefieres referenciar una variable explícita:
-    # clave_sii: "env:BRINGMEF29_CLAVE_ACME"
+    # clave_sii: "env:BRINGMEF29_CLAVE_CLIENTE_1"
 
-  - alias: "ferreteria-sur"
+  - alias: "cliente-2"
+    razon_social: "Razón social del segundo contribuyente"
     rut: "77.222.333-1"
-    razon_social: "Ferretería Sur Limitada"
-    nombre_contacto: "Rodrigo"
-    correo: ["rodrigo@ferreteriasur.cl"]
+    nombre_contacto: "Nombre de contacto"
+    correo: ["contacto@otraempresa.cl"]
     whatsapp: "+56 9 3333 4444"

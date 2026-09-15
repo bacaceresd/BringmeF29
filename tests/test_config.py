@@ -96,6 +96,6 @@ def test_el_ejemplo_versionado_es_cargable(monkeypatch, tmp_path):
     config = modulo_config.cargar(ejemplo)
 
     assert config.clientes
-    assert config.cliente("acme").rut == Rut.parsear("76.086.428-5")
+    assert config.cliente("cliente-1").rut == Rut.parsear("76.086.428-5")
     assert Rut.parsear(config.estudio.rut)
     assert Rut.parsear(config.pago.rut_titular)

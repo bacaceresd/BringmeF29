@@ -18,6 +18,8 @@ from pathlib import Path
 
 import yaml
 
+from . import cuadratura
+from .cuadratura import glosa as glosa_oficial
 from .modelos import DeclaracionF29, Periodo
 
 RUTA_LAYOUT = Path(__file__).parent / "recursos" / "resumen_f29.yml"
@@ -64,10 +66,16 @@ def construir(
     *,
     layout: dict | None = None,
     vencimiento_texto: str = "",
+    verificar_cuadratura: bool = True,
 ) -> Resumen:
     """Construye el resumen a partir de los códigos de la declaración."""
     layout = layout if layout is not None else cargar_layout()
     resumen = Resumen(vencimiento_texto=vencimiento_texto)
+
+    # Las identidades del propio formulario: si el SII trae un total que sus
+    # líneas no dan, es señal de que se leyó mal alguna y hay que mostrarlo.
+    if verificar_cuadratura:
+        resumen.descuadres.extend(str(d) for d in cuadratura.verificar(declaracion))
 
     for bruto in layout.get("grupos", []) or []:
         grupo = _construir_grupo(bruto, declaracion, resumen)
@@ -130,8 +138,9 @@ def _construir_linea(bruto: dict, declaracion: DeclaracionF29, resumen: Resumen)
         _revisar_cuadratura(declaracion, codigos, suma_de, str(bruto.get("glosa", "")), resumen)
 
     signo = str(bruto.get("signo", ""))
+    etiqueta = str(bruto.get("glosa", "")) or glosa_oficial(codigos[0]) if codigos else ""
     return LineaResumen(
-        glosa=str(bruto.get("glosa", "")),
+        glosa=etiqueta or str(bruto.get("glosa", "")),
         monto=monto,
         signo=signo,
         parentesis=bool(bruto.get("parentesis", signo == "-")),

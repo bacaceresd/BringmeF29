@@ -106,6 +106,24 @@ def construir_parser() -> argparse.ArgumentParser:
     p_web.add_argument("--puerto", type=int, default=8029, help="Puerto local (por defecto 8029).")
     p_web.add_argument("--sin-abrir", action="store_true", help="No abre el navegador solo.")
 
+    # -- catálogo de códigos -------------------------------------------------
+    p_cod = sub.add_parser(
+        "codigos",
+        help="Consulta el catálogo de códigos del F29.",
+        description=(
+            "Qué es cada código del Formulario 29, en qué línea va y qué efecto tiene "
+            "sobre los totales, según las instrucciones oficiales del SII."
+        ),
+    )
+    p_cod.add_argument("codigo", nargs="?", help="Un código concreto, por ejemplo 538.")
+    p_cod.add_argument("--buscar", metavar="TEXTO", help="Busca en las glosas.")
+    p_cod.add_argument("--seccion", metavar="TEXTO", help="Filtra por sección del formulario.")
+    p_cod.add_argument(
+        "--solo-montos",
+        action="store_true",
+        help="Sólo los códigos que llevan monto (omite cantidades de documentos y tasas).",
+    )
+
     # -- utilitarios --------------------------------------------------------
     sub.add_parser("clientes", help="Lista los clientes configurados.")
 
@@ -180,6 +198,9 @@ def main(argv: list[str] | None = None) -> int:
 def _despachar(args: argparse.Namespace) -> int:
     if args.comando == "clave":
         return _comando_clave(args)
+
+    if args.comando == "codigos":
+        return _comando_codigos(args)
 
     config = cargar(args.config)
     if args.comando == "web":
@@ -284,6 +305,62 @@ def _comando_lote(config: Config, args: argparse.Namespace) -> int:
         print(f"\nTerminó con problemas en: {', '.join(fallidos)}\n", file=sys.stderr)
         return 1
     print("\n✓ Lote completo sin incidencias.\n")
+    return 0
+
+
+def _comando_codigos(args: argparse.Namespace) -> int:
+    from .cuadratura import cargar_catalogo, describir, seccion_de_linea
+
+    catalogo = cargar_catalogo()
+
+    if args.codigo:
+        datos = describir(args.codigo, catalogo)
+        if not datos:
+            print(f"\nEl código {args.codigo} no está en el catálogo del F29.\n", file=sys.stderr)
+            return 1
+        efecto = {
+            "+": "suma al total de su bloque",
+            "-": "resta del total de su bloque",
+            "=": "es un total",
+        }.get(datos["signo"], "no entra en ningún total (informativo)")
+        print(f"\n  Código {datos['codigo']}")
+        print(f"  {datos['glosa']}\n")
+        print(f"  Línea   : {datos['linea']}")
+        print(f"  Sección : {datos['seccion']}")
+        print(f"  Efecto  : {efecto}")
+        if not datos["monto"]:
+            print("  Nota    : no lleva monto (es cantidad de documentos, tasa o base).")
+        print()
+        return 0
+
+    codigos = catalogo.get("codigos", {})
+    filtro = (args.buscar or "").lower()
+    filtro_seccion = (args.seccion or "").lower()
+
+    seleccion = []
+    for codigo, datos in codigos.items():
+        if args.solo_montos and not datos.get("monto"):
+            continue
+        if filtro and filtro not in datos["glosa"].lower() and filtro != codigo:
+            continue
+        seccion = seccion_de_linea(datos["linea"], catalogo)
+        if filtro_seccion and filtro_seccion not in seccion.lower():
+            continue
+        seleccion.append((datos["linea"], int(codigo), codigo, datos, seccion))
+
+    if not seleccion:
+        print("\nNingún código calza con ese filtro.\n", file=sys.stderr)
+        return 1
+
+    print(f"\n{len(seleccion)} código(s) del Formulario 29\n")
+    actual = ""
+    for _, _, codigo, datos, seccion in sorted(seleccion):
+        if seccion != actual:
+            actual = seccion
+            print(f"  ── {seccion} " + "─" * max(0, 56 - len(seccion)))
+        signo = datos["signo"] or " "
+        print(f"  {codigo:>4} {signo}  L{datos['linea']:<4} {datos['glosa'][:62]}")
+    print("\n  Fuente: instrucciones del F29 publicadas por el SII.\n")
     return 0
 
 

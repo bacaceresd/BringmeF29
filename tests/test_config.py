@@ -82,7 +82,7 @@ def test_el_layout_del_resumen_define_los_grupos_esperados():
 
     layout = resumen.cargar_layout()
     assert [g["titulo"] for g in layout["grupos"]] == ["IVA", "Retenciones", "PPM"]
-    assert layout["total"]["codigos"][0] == "094"
+    assert layout["total"]["codigos"][0] == "94"
 
 
 def test_el_ejemplo_versionado_es_cargable(monkeypatch, tmp_path):

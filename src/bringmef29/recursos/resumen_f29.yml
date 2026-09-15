@@ -2,38 +2,45 @@
 # Retenciones y PPM, con signos (+) (-) (=) y los montos que restan entre
 # paréntesis.
 #
+# Los códigos salen de las instrucciones oficiales del SII (ver codigos_f29.yml).
+# Las glosas se pueden omitir: si falta, se usa la del catálogo.
+#
 # CÓMO LEER ESTE ARCHIVO
 #   codigo:      código del F29 del que sale el monto. Puede ser una lista: se
-#                usa el primero que venga en la declaración, lo que permite
-#                cubrir variantes del formulario sin tocar el código fuente.
-#   signo:       "+", "-" o "=" (subtotal). Sólo se imprime.
+#                usa el primero que venga en la declaración.
+#   signo:       "+", "-" o "=" (subtotal). Sólo se imprime; el efecto aritmético
+#                real de cada código está en codigos_f29.yml y lo usa la
+#                verificación de cuadratura.
 #   parentesis:  muestra el monto entre paréntesis. Por defecto, cuando signo es "-".
 #   siempre:     la línea aparece aunque el monto sea cero. Por defecto se omite.
-#   suma_de:     códigos cuya suma algebraica debe dar este total. Si no cuadra,
-#                el programa lo avisa en vez de callarlo.
 #
-# LOS CÓDIGOS SON AJUSTABLES A PROPÓSITO. Cada contribuyente usa un subconjunto
-# distinto del formulario, y las líneas cuyo código no venga en la declaración
-# simplemente no se imprimen: un código que no calce nunca inventa una cifra.
-# Verifica contra el instructivo vigente del F29 los que marcamos con ⚠.
+# Una línea cuyo código no venga en la declaración no se imprime: un código que no
+# calce nunca inventa una cifra.
 
 grupos:
   - titulo: "IVA"
     lineas:
       - signo: "+"
         glosa: "IVA DF Boletas electrónicas"
-        codigo: ["111", "110"]            # ⚠ verifica: débito por boletas
-      # Si tu cliente emite liquidaciones de factura (mandatos, comisiones),
-      # descomenta esta línea con el código que le corresponda en su formulario:
-      # - signo: "-"
-      #   glosa: "IVA DF Liquidaciones factura"
-      #   codigo: "___"                   # ⚠ verifica en el F29 del cliente
+        codigo: "111"                 # línea 10 — débito fiscal de boletas
+      - signo: "+"
+        glosa: "IVA DF Ventas por medios electrónicos"
+        codigo: "759"                 # línea 11
+      - signo: "+"
+        glosa: "IVA DF Liquidaciones factura"
+        codigo: "501"                 # línea 17 — mandante o comisión del mandatario
       - signo: "+"
         glosa: "IVA DF Facturas afectas"
-        codigo: "502"
+        codigo: "502"                 # línea 7
+      - signo: "+"
+        glosa: "IVA DF Notas de débito emitidas"
+        codigo: "513"                 # línea 12
+      - signo: "-"
+        glosa: "IVA DF Notas de crédito emitidas"
+        codigo: "510"                 # línea 13 — resta del débito
       - signo: "="
         glosa: "Total IVA Débito"
-        codigo: "538"
+        codigo: "538"                 # línea 23
         siempre: true
         total: true
 
@@ -41,16 +48,25 @@ grupos:
 
       - signo: "-"
         glosa: "IVA CF Facturas afectas"
-        codigo: ["520", "511"]            # ⚠ verifica: crédito por facturas del giro
+        codigo: "520"                 # línea 28 — facturas recibidas del giro
+      - signo: "-"
+        glosa: "IVA CF Activo fijo"
+        codigo: "525"                 # línea 31
+      - signo: "-"
+        glosa: "IVA CF Supermercados"
+        codigo: "762"                 # línea 29
       - signo: "+"
         glosa: "IVA CF Notas de crédito recibidas"
-        codigo: ["527", "528"]            # ⚠ verifica: notas de crédito recibidas
+        codigo: "528"                 # línea 32 — resta del crédito
+      - signo: "-"
+        glosa: "IVA CF Notas de débito recibidas"
+        codigo: "532"                 # línea 33
       - signo: "-"
         glosa: "Remanente IVA CF mes anterior"
-        codigo: "504"
+        codigo: "504"                 # línea 36
       - signo: "="
         glosa: "Total IVA Crédito"
-        codigo: "537"
+        codigo: "537"                 # línea 49
         parentesis: true
         siempre: true
         total: true
@@ -58,39 +74,45 @@ grupos:
       - separador: true
 
       - signo: "="
+        glosa: "IVA determinado del período"
+        codigo: "89"                  # línea 50 — cuando débitos superan créditos
+        destacar: true
+      - signo: "="
         glosa: "Remanente IVA CF mes siguiente (IVA DF − IVA CF)"
-        codigo: "077"
+        codigo: "77"                  # línea 50 — cuando créditos superan débitos
         destacar: true
 
   - titulo: "Retenciones"
     lineas:
       - glosa: "Impuesto único 2ª categoría"
-        codigo: "048"
+        codigo: "48"                  # línea 60 — Art. 74 N°1 LIR
       - glosa: "Honorarios serv. profesionales"
-        codigo: "151"
+        codigo: "151"                 # línea 61 — Art. 42 N°2, Art. 74 N°2 LIR
+      - glosa: "Retención directores (Art. 48)"
+        codigo: "153"                 # línea 62
+      - glosa: "Retención capitales mobiliarios"
+        codigo: "50"                  # línea 59 — Art. 73 LIR
       - signo: "="
         glosa: "Total retenciones a pagar"
-        suma_de: ["048", "151"]
+        suma_de: ["48", "151", "153", "50"]
         siempre: true
         total: true
 
   - titulo: "PPM"
     lineas:
       - glosa: "Base imponible PPM"
-        codigo: "563"
-      # Si el cliente suspende PPM por pérdida tributaria (art. 90 LIR),
-      # descomenta con el código que aparezca en su formulario:
-      # - glosa: "Pérdida trib. art. 90"
-      #   codigo: "___"                   # ⚠ verifica en el F29 del cliente
+        codigo: "563"                 # línea 69 — ingresos brutos del período
+      - glosa: "Pérdida trib. art. 90"
+        codigo: "30"                  # línea 69 — suspende PPM
       - signo: "="
         glosa: "PPM neto determinado"
-        codigo: "062"
+        codigo: "62"                  # línea 69
         total: true
-    # Nota que reemplaza al grupo completo cuando no hay PPM que pagar.
+    # Nota que reemplaza al monto cuando no hay PPM que pagar.
     nota_si_cero: "No paga PPM"
-    codigo_cero: "062"
+    codigo_cero: "62"
 
 # Línea final del resumen.
 total:
   glosa: "TOTAL A PAGAR F29 {periodo}"
-  codigos: ["094", "091", "547"]
+  codigos: ["94", "91", "547"]

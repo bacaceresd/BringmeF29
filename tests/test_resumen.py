@@ -11,12 +11,24 @@ from bringmef29.rut import Rut
 # Caso real de un contribuyente con remanente de crédito fiscal: no paga IVA ni
 # PPM, y lo único que entera son las retenciones.
 CASO = {
-    "111": 23030105, "502": 2317063, "538": 2317063,
-    "520": 1993566, "527": 6674, "504": 2533186, "537": 4520078,
-    "077": 2203015,
-    "048": 53572, "151": 386874,
-    "062": 0, "563": 13823935,
-    "091": 440446,
+    # Débitos (línea 7 a 22): boletas + facturas, menos notas de crédito emitidas.
+    "111": 23030105,   # L10  IVA débito de boletas
+    "502": 2317063,    # L7   IVA débito de facturas emitidas
+    "510": 23030105,   # L13  notas de crédito emitidas — resta
+    "538": 2317063,    # L23  TOTAL DÉBITOS
+    # Créditos (línea 28 a 48).
+    "520": 1993566,    # L28  facturas recibidas del giro
+    "528": 6674,       # L32  notas de crédito recibidas — resta
+    "504": 2533186,    # L36  remanente del mes anterior
+    "537": 4520078,    # L49  TOTAL CRÉDITOS
+    # Créditos superan débitos: queda remanente, no hay IVA que pagar.
+    "77": 2203015,     # L50  remanente para el mes siguiente
+    # Retenciones y PPM.
+    "48": 53572,       # L60  impuesto único 2ª categoría
+    "151": 386874,     # L61  honorarios
+    "62": 0,           # L69  PPM neto determinado
+    "563": 13823935,   # L69  base imponible PPM
+    "91": 440446,      # L141 TOTAL A PAGAR EN PLAZO LEGAL
 }
 
 

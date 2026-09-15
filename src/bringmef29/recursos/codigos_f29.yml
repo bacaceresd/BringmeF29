@@ -1,0 +1,272 @@
+# Catálogo de códigos del Formulario 29.
+#
+# Generado desde las fuentes oficiales del SII:
+#   · Instrucciones para llenar el F29, versión 12-11-2024
+#     https://www.sii.cl/servicios_online/instrucciones_f29_20241112.pdf
+#   · Formulario 29 — mapa de líneas y códigos
+#     https://www.sii.cl/formularios/imagen/F29.pdf
+#
+# Por cada código:
+#   linea   número de línea del formulario donde aparece
+#   signo   su efecto dentro del total de su bloque:
+#             "+" suma    "-" resta    "=" es un total    "" no entra en ningún total
+#   monto   true si es el código de la línea que lleva el monto. En cada línea el
+#           SII pide varios códigos —cantidad de documentos, tasa, base, monto— y
+#           sólo el último entra en la suma del bloque.
+#   glosa   para qué sirve
+#
+# El SII modifica el formulario. Si un código deja de calzar, la fuente manda:
+# revisa las instrucciones vigentes antes de editar esto a mano.
+
+codigos:
+  "20": {linea: 1, signo: "", monto: true, glosa: "Exportaciones (monto neto)"}
+  "585": {linea: 1, signo: "", monto: false, glosa: "Documentos de exportación emitidos durante el período que declara."}
+  "142": {linea: 2, signo: "", monto: true, glosa: "Ventas y/o servicios exentos o no gravados"}
+  "586": {linea: 2, signo: "", monto: false, glosa: "Documentos emitidos durante el período que declara por concepto de ventas y/o servicios exentos o no gravados asociados al giro."}
+  "731": {linea: 3, signo: "", monto: false, glosa: "Documentos tributarios emitidos durante el período, por ventas con retención anticipada d el IVA sobre el margen de comercialización (contribuyentes retenidos)."}
+  "732": {linea: 3, signo: "", monto: true, glosa: "Monto neto por las ventas del período, documentadas o no, con retención sobre el margen de comercialización (contribuyentes retenidos), como ocurre, por ejemplo, en las ventas de c"}
+  "714": {linea: 4, signo: "", monto: false, glosa: "Documentos emitidos (facturas y boletas de ventas y servicios, no afectos o exentos de IVA, notas de débito y notas de crédito), durante el período que declara por concepto de vent"}
+  "715": {linea: 4, signo: "", monto: true, glosa: "Monto neto de los documentos registrados en Cód. 714."}
+  "515": {linea: 5, signo: "", monto: false, glosa: "Facturas de compra, notas de débito y notas de crédito recibidas, asociadas a facturas de compra y facturas de inicio emitidas con retención total producto del cambio de sujeto que"}
+  "587": {linea: 5, signo: "", monto: true, glosa: "Sumatoria de los montos netos contenidos en las facturas de compra y notas de débito recibidas, menos las notas d e crédito recibidas y más las facturas de inicio emitidas en el pe"}
+  "720": {linea: 6, signo: "", monto: true, glosa: "Monto neto de las facturas de compra recibidas con retención parcial producto del cambio de sujeto que afecta a las operaciones realizadas, durante el período que declara más las n"}
+  "502": {linea: 7, signo: "+", monto: true, glosa: "IVA débito fiscal de facturas emitidas"}
+  "503": {linea: 7, signo: "+", monto: false, glosa: "Cantidad de facturas emitidas"}
+  "763": {linea: 8, signo: "+", monto: false, glosa: "Facturas emitidas durante el periodo que declara, por la venta de bienes inmuebles."}
+  "764": {linea: 8, signo: "+", monto: true, glosa: "IVA débito por venta de bienes inmuebles"}
+  "716": {linea: 9, signo: "+", monto: false, glosa: "Facturas y notas de débito emitidas en el período, por ventas o servicios que no son del giro (activo fijo y otros)."}
+  "717": {linea: 9, signo: "+", monto: true, glosa: "IVA débito por ventas fuera del giro"}
+  "110": {linea: 10, signo: "+", monto: false, glosa: "Cantidad de boletas"}
+  "111": {linea: 10, signo: "+", monto: true, glosa: "IVA débito fiscal de boletas"}
+  "758": {linea: 11, signo: "+", monto: false, glosa: "Comprobantes o recibos de pago emitidos por terminal transaccional de ventas efectuadas a través de medios electrónicos durante el periodo que declara, por concepto de ventas y/o s"}
+  "759": {linea: 11, signo: "+", monto: true, glosa: "IVA débito de ventas pagadas por medios electrónicos"}
+  "512": {linea: 12, signo: "+", monto: false, glosa: "Notas de débito emitidas y las notas de débito recibidas asociadas a facturas de compra con retención parcial durante el período que declara."}
+  "513": {linea: 12, signo: "+", monto: true, glosa: "IVA débito de notas de débito emitidas"}
+  "509": {linea: 13, signo: "-", monto: false, glosa: "Cantidad de notas de crédito emitidas"}
+  "510": {linea: 13, signo: "-", monto: true, glosa: "IVA de notas de crédito emitidas"}
+  "708": {linea: 14, signo: "-", monto: false, glosa: "Notas de crédito emitidas en el período que declara, por anulación de ventas efectuadas con vales de Máquinas Registradoras, Terminales de Puntos de Ventas o Impresoras Fiscales, a"}
+  "709": {linea: 14, signo: "-", monto: true, glosa: "Impuesto contenido en las notas de crédito registradas en el Cód. 708."}
+  "733": {linea: 15, signo: "-", monto: false, glosa: "Notas de crédito emitidas por ventas y servicios que no son del giro (activo fijo y otros)."}
+  "734": {linea: 15, signo: "-", monto: true, glosa: "Impuesto recargado en las notas de crédito emitidas por ventas y servicios que no son del giro registrados en el Cód. 733."}
+  "516": {linea: 16, signo: "+", monto: false, glosa: "Facturas de compra recibidas con retención parcial producto del cambio de sujeto que afecta a las operaciones realizadas, durante el período que declara"}
+  "517": {linea: 16, signo: "+", monto: true, glosa: "IVA débito no retenido en facturas de compra (cambio de sujeto parcial)"}
+  "500": {linea: 17, signo: "+", monto: false, glosa: "Cantidad de liquidaciones factura"}
+  "501": {linea: 17, signo: "+", monto: true, glosa: "IVA débito de liquidaciones factura"}
+  "154": {linea: 18, signo: "+", monto: true, glosa: "Monto generado por devoluciones o imputaciones del remanente de crédito fiscal superiores a las que correspondía, en base al Art. 27 bis registradas en otros períodos, debidamente "}
+  "518": {linea: 19, signo: "+", monto: true, glosa: "Restitución adicional generada en la proporción de operaciones exentas y/o no gravadas sobre las afectas que corresponde a la devolución del Art. 27 bis, inciso 2° de la Ley N° 19."}
+  "713": {linea: 20, signo: "+", monto: true, glosa: "Reintegro de Impuesto de Timbres y Estampillas utilizado como crédito fiscal, por haber superado durante el año comercial, el límite de ventas y servicios del giro, establecido en "}
+  "791": {linea: 22, signo: "+", monto: true, glosa: "Si usted hizo uso del beneficio de devolución de remanente y en los periodos posteriores tuvo ventas exentas. Los contribuyentes que hayan recibido la devolución del beneficio indi"}
+  "538": {linea: 23, signo: "=", monto: true, glosa: "TOTAL DÉBITOS"}
+  "511": {linea: 24, signo: "", monto: false, glosa: "IVA por documentos electrónicos recibidos (informativo)"}
+  "514": {linea: 24, signo: "", monto: true, glosa: "IVA por documentos electrónicos recibidos sin derecho a crédito (informativo)"}
+  "521": {linea: 25, signo: "", monto: true, glosa: "Sin glosa en las instrucciones oficiales"}
+  "564": {linea: 25, signo: "", monto: false, glosa: "Sin glosa en las instrucciones oficiales"}
+  "560": {linea: 26, signo: "", monto: true, glosa: "Cód. 562, registrar en cada código, según corresponda, el monto neto de las compras que no dan derecho a crédito fiscal."}
+  "566": {linea: 26, signo: "", monto: false, glosa: "Sin glosa en las instrucciones oficiales"}
+  "562": {linea: 27, signo: "", monto: true, glosa: "Sin glosa en las instrucciones oficiales"}
+  "584": {linea: 27, signo: "", monto: false, glosa: "Registrar separadamente, según corresponda a compras internas afectas, importaciones o compras internas exentas o no gravadas, el número de documentos recibidos, ya sean manuales o"}
+  "519": {linea: 28, signo: "+", monto: false, glosa: "Cantidad de facturas recibidas"}
+  "520": {linea: 28, signo: "+", monto: true, glosa: "IVA crédito fiscal de facturas recibidas del giro"}
+  "761": {linea: 29, signo: "+", monto: false, glosa: "Facturas recibidas durante el periodo que declara, por adquisiciones en Supermercados y Comercios similares, según Art.23 N°4 D.L.825, de 1974 (Ley N°20.780)."}
+  "762": {linea: 29, signo: "+", monto: true, glosa: "IVA crédito por compras en supermercados"}
+  "765": {linea: 30, signo: "+", monto: false, glosa: "Facturas recibidas con anterioridad al 01.01.2016, por la adquisición o construcción mediante un cont rato general de construcción de bienes inmuebles, según artículo octavo transi"}
+  "766": {linea: 30, signo: "+", monto: true, glosa: "Monto del impuesto soportado con anterioridad al 01 de enero de 2016, en la adquisición o construcción de los bienes inmue bles vendidos durante este período tributario, respecto d"}
+  "524": {linea: 31, signo: "+", monto: false, glosa: "Facturas recibidas durante el período que declara, por adquisición de activo fijo que da derecho a cr édito fiscal."}
+  "525": {linea: 31, signo: "+", monto: true, glosa: "IVA crédito de facturas de activo fijo"}
+  "527": {linea: 32, signo: "-", monto: false, glosa: "Cantidad de notas de crédito recibidas"}
+  "528": {linea: 32, signo: "-", monto: true, glosa: "IVA crédito de notas de crédito recibidas"}
+  "531": {linea: 33, signo: "+", monto: false, glosa: "Notas de débito recibidas y notas de débito emitidas asociadas facturas de compra durante el período que declara."}
+  "532": {linea: 33, signo: "+", monto: true, glosa: "IVA crédito de notas de débito recibidas"}
+  "534": {linea: 34, signo: "+", monto: false, glosa: "Declaraciones de ingreso (DIN) del Servicio Nacional de Aduanas por importaciones que dan derecho a crédito fiscal (excluidos aquellos por concepto de bienes de activo fijo, que se"}
+  "535": {linea: 34, signo: "+", monto: true, glosa: "IVA crédito de importaciones"}
+  "536": {linea: 35, signo: "+", monto: false, glosa: "DIN por concepto de importaciones de bienes del activo fijo, que dan derecho a crédito fiscal, tramit ados durante el período que declara."}
+  "553": {linea: 35, signo: "+", monto: true, glosa: "IVA crédito de importaciones de activo fijo"}
+  "504": {linea: 36, signo: "+", monto: true, glosa: "Remanente de crédito fiscal del mes anterior"}
+  "593": {linea: 37, signo: "-", monto: true, glosa: "La devolución solicitada por IVA exportadores, sobre la base del Art. 36 del D.L. N° 825, de 1974."}
+  "594": {linea: 38, signo: "-", monto: true, glosa: "La devolución por compras de activo fijo, sobre la base del Art. 27 bis del D.L. N° 825, de 1974, solicitada en el período tributario que declara."}
+  "592": {linea: 39, signo: "-", monto: true, glosa: "Cantidad en pesos, del certificado de imputación solicitado por compras de activo fijo, sobre la base del Art. 27 bis del D.L. N° 825, de 1974, en el período tributario que declara"}
+  "539": {linea: 40, signo: "-", monto: true, glosa: "La devolución solicitada por concepto de cambio de sujeto, en el período que declara. No se debe incorporar a esta línea la devolución por anticipo de cambio de sujeto."}
+  "718": {linea: 41, signo: "-", monto: true, glosa: "La devolución solicitada por las Generadoras Eléctricas, por remanente de crédito fiscal IV A originado en Impuesto Específico al Petróleo Diesel (IEPD) (Ley N° 20.258, de 2008)."}
+  "790": {linea: 42, signo: "-", monto: true, glosa: "Sin glosa en las instrucciones oficiales"}
+  "164": {linea: 43, signo: "+", monto: true, glosa: "Suma reintegrada en la cual se restituyó el crédito fiscal IVA percibido indebidamente, excluidos los intereses, sólo si la restitución se constituye nuevamente en créditos, según "}
+  "523": {linea: 46, signo: "+", monto: true, glosa: "Cantidad en pesos, del impuesto del Art. 11° de la Ley N° 18.211, de 1983 por importaciones de contribuyentes establecidos en la Zona Franca de Extensión y que se rijan por las nor"}
+  "712": {linea: 47, signo: "+", monto: true, glosa: "Impuesto de Timbres y Estampillas, pagado y/o devengado en el período tributario que declara, según el Art. 3° de la Ley N° 20.259, de 2008."}
+  "757": {linea: 48, signo: "+", monto: true, glosa: "Las Administradoras de Fondos deberán registrar en esta línea el crédito fiscal a que tienen derecho y que corresponde al monto del Impuesto al Valor Agregado cobrado por la gestió"}
+  "537": {linea: 49, signo: "=", monto: true, glosa: "TOTAL CRÉDITOS"}
+  "77": {linea: 50, signo: "+", monto: false, glosa: "Remanente de crédito fiscal para el período siguiente"}
+  "89": {linea: 50, signo: "+", monto: true, glosa: "IVA determinado del período (538 − 537)"}
+  "755": {linea: 50, signo: "+", monto: false, glosa: "Sin glosa en las instrucciones oficiales"}
+  "756": {linea: 50, signo: "+", monto: false, glosa: "Cód 755"}
+  "772": {linea: 51, signo: "+", monto: false, glosa: "Sin glosa en las instrucciones oficiales"}
+  "773": {linea: 51, signo: "+", monto: false, glosa: "Sin glosa en las instrucciones oficiales"}
+  "774": {linea: 51, signo: "+", monto: false, glosa: "Sin glosa en las instrucciones oficiales"}
+  "775": {linea: 51, signo: "+", monto: true, glosa: "Sin glosa en las instrucciones oficiales"}
+  "777": {linea: 52, signo: "", monto: false, glosa: "Sin glosa en las instrucciones oficiales"}
+  "778": {linea: 52, signo: "", monto: true, glosa: "Sin glosa en las instrucciones oficiales"}
+  "782": {linea: 53, signo: "", monto: false, glosa: "Sin glosa en las instrucciones oficiales"}
+  "794": {linea: 53, signo: "", monto: false, glosa: "Sin glosa en las instrucciones oficiales"}
+  "796": {linea: 53, signo: "", monto: false, glosa: "Sin glosa en las instrucciones oficiales"}
+  "797": {linea: 53, signo: "", monto: true, glosa: "Sin glosa en las instrucciones oficiales"}
+  "784": {linea: 54, signo: "", monto: false, glosa: "Sin glosa en las instrucciones oficiales"}
+  "798": {linea: 54, signo: "", monto: false, glosa: "Sin glosa en las instrucciones oficiales"}
+  "799": {linea: 54, signo: "", monto: true, glosa: "Sin glosa en las instrucciones oficiales"}
+  "786": {linea: 55, signo: "", monto: false, glosa: "Sin glosa en las instrucciones oficiales"}
+  "800": {linea: 55, signo: "", monto: false, glosa: "Sin glosa en las instrucciones oficiales"}
+  "801": {linea: 55, signo: "", monto: false, glosa: "Sin glosa en las instrucciones oficiales"}
+  "802": {linea: 55, signo: "", monto: true, glosa: "Sin glosa en las instrucciones oficiales"}
+  "788": {linea: 56, signo: "", monto: false, glosa: "Sin glosa en las instrucciones oficiales"}
+  "803": {linea: 56, signo: "", monto: false, glosa: "Sin glosa en las instrucciones oficiales"}
+  "804": {linea: 56, signo: "", monto: false, glosa: "Sin glosa en las instrucciones oficiales"}
+  "805": {linea: 56, signo: "", monto: true, glosa: "Sin glosa en las instrucciones oficiales"}
+  "760": {linea: 57, signo: "+", monto: true, glosa: "Restitución de impuestos de acuerdo con lo señalado en el art. 27 ter D.L. 825, de 1974, inciso 2°, a contar del mes siguiente del período en que venza el plazo para que el deudor "}
+  "767": {linea: 58, signo: "-", monto: true, glosa: "Cantidad en pesos, del certificado de imputación solicitado sobre la base del artículo 27 ter del D.L. 825, incorporado por la Ley N°20.720, emitido por la Tesorería General de la "}
+  "50": {linea: 59, signo: "+", monto: true, glosa: "Retención impuesto 1ª categoría sobre capitales mobiliarios (Art. 73 LIR)"}
+  "48": {linea: 60, signo: "+", monto: true, glosa: "Retención de Impuesto Único a los Trabajadores (Art. 74 N°1 LIR)"}
+  "151": {linea: 61, signo: "+", monto: true, glosa: "Retención 10% sobre honorarios (Art. 42 N°2, según Art. 74 N°2 LIR)"}
+  "153": {linea: 62, signo: "+", monto: true, glosa: "Retención 10% sobre rentas del Art. 48 (directores)"}
+  "49": {linea: 63, signo: "+", monto: true, glosa: "Retención sobre rentas del Art. 42 N° 1 LIR con tasa del 3% por reintegro del préstamo tasa 0%, según art. 9 letra a) Ley N° 21.252. Esta retención adicional de tasa 3% debe ser ef"}
+  "155": {linea: 64, signo: "+", monto: true, glosa: "Retención sobre rentas del Art. 42 N° 2 LIR con tasa del 3% por reintegro del préstamo tasa 0%, según art. 7 Ley N° 21.242 y art. 9 letra b) Ley N° 21.252. Los pagadores obligados "}
+  "54": {linea: 65, signo: "+", monto: true, glosa: "0,5% sobre el monto total de las ventas de periódicos, revistas e impresos realizados efectivamente a los Suplementeros."}
+  "56": {linea: 66, signo: "+", monto: true, glosa: "Monto del impuesto retenido en el mes, determinado según el mineral de que se trate y las tasas que correspondan de acuerdo a la publicación de tasas efectuada por el SII en cada a"}
+  "588": {linea: 67, signo: "+", monto: true, glosa: "Esta línea debe ser utilizada por las Compañías de Seguro que en cumplimiento de un seguro dotal contratado a partir del 7 de noviembre de 2001, efectúen la retención con tasa del "}
+  "589": {linea: 68, signo: "+", monto: true, glosa: "Esta línea debe ser utilizada por las Administradoras de Fondos de Pensiones y las Instituciones Autorizadas que administren los recursos de Ahorro Previsional Voluntario (APV) que"}
+  "30": {linea: 69, signo: "+", monto: false, glosa: "Monto de pérdida tributaria — suspende PPM (Art. 90 LIR)"}
+  "62": {linea: 69, signo: "+", monto: true, glosa: "PPM neto determinado"}
+  "68": {linea: 69, signo: "+", monto: false, glosa: "Crédito / tope suspensión PPM"}
+  "115": {linea: 69, signo: "+", monto: false, glosa: "Tasa de PPM (%)"}
+  "563": {linea: 69, signo: "+", monto: false, glosa: "Base imponible de PPM (ingresos brutos del período)"}
+  "156": {linea: 70, signo: "+", monto: true, glosa: "1ra Categoría. Art. 84 letra a) y 14 letra D) N° 3 letra (k) y N° 8 letra (a) numeral (viii) LIR, con tasa 3%, por reintegro de préstamo tasa 0%, según art. 9° letra c) Ley N° 21.2"}
+  "120": {linea: 71, signo: "+", monto: false, glosa: "Sin glosa en las instrucciones oficiales"}
+  "122": {linea: 71, signo: "+", monto: false, glosa: "Sin glosa en las instrucciones oficiales"}
+  "123": {linea: 71, signo: "+", monto: true, glosa: "Sin glosa en las instrucciones oficiales"}
+  "542": {linea: 71, signo: "+", monto: false, glosa: "Sin glosa en las instrucciones oficiales"}
+  "565": {linea: 71, signo: "+", monto: false, glosa: "Sin glosa en las instrucciones oficiales"}
+  "700": {linea: 72, signo: "+", monto: false, glosa: "La pérdida operacional que según el inciso 4° del Art. 90 de la LIR, le permite suspender este pago provisional, y no llene ninguna de las columnas siguientes de esta línea."}
+  "701": {linea: 72, signo: "+", monto: false, glosa: "Los ingresos brutos percibidos o devengados durante el mes que se declara, que provengan de las ventas d e los productos mineros."}
+  "702": {linea: 72, signo: "+", monto: false, glosa: "Tasa variable determinada según el mecanismo de la Circular N° 55, de 2005 (con un sólo decimal); o bien la tasa de 0,3% en caso de que no pueda determinar la tasa variable de PPM,"}
+  "703": {linea: 72, signo: "+", monto: true, glosa: "Resultado que se produzca entre el producto de la base Imponible por la Tasa, menos el crédito registrado en la columna anterior. Línea 73: Explotador Minero Royalty Ley 21.591 Est"}
+  "711": {linea: 72, signo: "+", monto: false, glosa: "Monto del PPV reajustado que se impute al cumplimiento del Pago Provisional Mensual Obligatorio del mismo ejercic io comercial, todo ello según el Art. 88 de la LIR."}
+  "806": {linea: 73, signo: "+", monto: false, glosa: "La pérdida operacional que según el inciso 4° del Art. 90 de la LIR, le permite suspender este pago provisional, y no llene ninguna de las columnas siguientes de esta línea, en con"}
+  "807": {linea: 73, signo: "+", monto: false, glosa: "Los ingresos brutos percibidos o devengados durante el mes que se declara, que provengan de las ventas d e los productos mineros, en conformidad a las instrucciones contenidas en l"}
+  "808": {linea: 73, signo: "+", monto: false, glosa: "Tasa variable determinada según el mecanismo de la Circular N° 03 de 2024. Durante el período en que rijan las normas del artículo segundo de las normas transitorias de la Ley 21.5"}
+  "809": {linea: 73, signo: "+", monto: false, glosa: "Monto del Pago Provisional Voluntario conforme a lo señalado en el artículo 88 de la LIR e inciso final del artíc ulo 7 de Ley N° 21.591."}
+  "810": {linea: 73, signo: "+", monto: true, glosa: "Resultado que se produzca de multiplicar la base Imponible (código 807) por la Tasa (código 808), incorporando los ajustes que correspondan conforme al artículo 7 y segundo transit"}
+  "66": {linea: 74, signo: "+", monto: true, glosa: "0,3% del precio corriente en plaza de los vehículos destinados al transporte, según tabla de valores que cada año publica el SII. En el caso de los automóviles destinados a taxis o"}
+  "721": {linea: 75, signo: "-", monto: false, glosa: "Y declare por internet el monto del crédito del mes por gastos de capacitación. El monto a deducir como crédito debe ser el menor entre: 1) Los gastos de capacitación que el contri"}
+  "722": {linea: 75, signo: "-", monto: false, glosa: "Y declare por internet el remanente por gastos de capacitación del mes anterior debidamente reajustado."}
+  "723": {linea: 75, signo: "-", monto: true, glosa: "Y declare por internet el monto de crédito por gastos de capacitación a imputar que resulta de la suma de los Códigos. 721 y 722, con tope del valor de los PPM declarados en los Có"}
+  "724": {linea: 75, signo: "-", monto: false, glosa: "Y declare por internet el monto de remanente por gasto de capacitación para el período siguiente que resulta de la diferencia positiva de la suma entre los Códigos. 62, 123, 703 y "}
+  "152": {linea: 76, signo: "+", monto: true, glosa: "Monto del pago provisional mensual de las rentas percibidas por contribuyentes del Art. 42, N° 2° de la LIR, esto es, profesionales independientes; personas que ejerzan cualquier p"}
+  "157": {linea: 77, signo: "+", monto: true, glosa: "Sin glosa en las instrucciones oficiales"}
+  "70": {linea: 78, signo: "+", monto: true, glosa: "3% del monto de los ingresos brutos de los Talleres Artesanales u Obreros, determinados según el Art. 29 de la LIR. Si el taller artesanal se dedica preponderantemente a la fabrica"}
+  "776": {linea: 79, signo: "", monto: true, glosa: "Sin glosa en las instrucciones oficiales"}
+  "595": {linea: 80, signo: "=", monto: true, glosa: "SUBTOTAL IMPUESTO DETERMINADO ANVERSO (líneas 50 a 67)"}
+  "529": {linea: 81, signo: "", monto: true, glosa: "Ventas del Período: Registre el total de las ventas efectuadas en el período."}
+  "530": {linea: 82, signo: "", monto: true, glosa: "Créditos del Período: Registre el total del impuesto soportado en las compras efectuadas en el período."}
+  "409": {linea: 83, signo: "+", monto: true, glosa: "Diferencia entre el Débito Fiscal Fijo menos el Crédito Fiscal determinado en el trimestre. Cálculo que quedará inserto en el libro correspondiente, anotando los débitos. Sin embar"}
+  "522": {linea: 84, signo: "+", monto: true, glosa: "Impuesto determinado al aplicar la tasa del 15%, al monto neto de la primera venta o importación de las especies que se señalan en el Art. 37, letras e), h), i), l) del D.L. N° 825"}
+  "526": {linea: 85, signo: "+", monto: true, glosa: "Impuesto determinado al aplicar la tasa del 50%, al monto neto de la primera venta o importación de las especies que se señalen en el Art. 37, letra j) del D.L. N° 825, de 1974."}
+  "113": {linea: 86, signo: "+", monto: true, glosa: "Total de débitos por impuesto adicional de las letras a), b) y c) del Art. 37 y Art. 40 del D.L. N° 825, de 1974, con tasa del 15%."}
+  "28": {linea: 87, signo: "-", monto: true, glosa: "Total del crédito del período por impuesto adicional del Art. 37, letras a), b) y c) del D.L. N° 825, de 1974."}
+  "548": {linea: 88, signo: "-", monto: true, glosa: "Monto reintegrado por devoluciones indebidas de crédito fiscal de exportadores, relativas al impuesto adicional d el Art. 37, del D.L. N° 825, de 1974."}
+  "540": {linea: 89, signo: "-", monto: true, glosa: "Remanente del mes anterior por concepto de impuesto adicional del Art. 37, letras a), b) y c) del D.L. N° 825, de 1974."}
+  "541": {linea: 90, signo: "+", monto: true, glosa: "La devolución solicitada según el Art. 36, del D.L. N° 825, de 1974 (franquicia exportadores), por conce pto de impuesto adicional del Art. 37, letras a), b) y c) del D.L. N° 825, "}
+  "549": {linea: 91, signo: "+", monto: false, glosa: "Reste al monto declarado en el Cód. 113, la suma de los montos declarados en los Códigos.28, 548 y 540, y sume el monto declarado en Cód. 541. Si el resultado es negativo regístrel"}
+  "550": {linea: 91, signo: "+", monto: true, glosa: "Sin glosa en las instrucciones oficiales"}
+  "577": {linea: 92, signo: "+", monto: true, glosa: "Sin glosa en las instrucciones oficiales"}
+  "32": {linea: 93, signo: "+", monto: true, glosa: "Sin glosa en las instrucciones oficiales"}
+  "150": {linea: 94, signo: "+", monto: true, glosa: "Sin glosa en las instrucciones oficiales"}
+  "146": {linea: 95, signo: "+", monto: true, glosa: "Sin glosa en las instrucciones oficiales"}
+  "752": {linea: 96, signo: "+", monto: true, glosa: "Columna “Débitos”: Registre en cada línea según corresponda, el monto del impuesto por ventas afectas a impuesto adicional del Art. 42, del D.L. N° 825, de 1974."}
+  "545": {linea: 97, signo: "+", monto: true, glosa: "Columna “Débitos”: Registre el monto de impuesto adicional del Art. 42, del D.L. N° 825, de 1974, recargado en las notas de débito emitidas en el período."}
+  "546": {linea: 98, signo: "-", monto: true, glosa: "Columna “Débitos”: Registre el monto de impuesto adicional del Art. 42, del D.L. N° 825, de 1974, recargado en las notas de crédito emitidas en el período."}
+  "710": {linea: 99, signo: "-", monto: true, glosa: "Columna “Débitos”: Registre el monto del impuesto adicional del Art. 42, del D.L. N° 825, de 1974, recargado en las notas de crédito emitidas en el período, por anulación de ventas"}
+  "602": {linea: 100, signo: "=", monto: true, glosa: "Columna “Débitos”: Registre el valor que resulte de la operación aritmética de los débitos de las líneas 78 a 85."}
+  "551": {linea: 106, signo: "+", monto: true, glosa: "Columna “Crédito Imputable del período”: Registre el monto de impuesto adicional del Art. 42, del D.L. N° 825, de 1974, recargado en las notas de débito recibidas en el período."}
+  "559": {linea: 107, signo: "-", monto: true, glosa: "Columna “Crédito Imputable del período”: Registre el monto de impuesto adicional del Art. 42, del D.L. N° 825, de 1974, recargado en las notas de crédito recibidas en el período."}
+  "508": {linea: 108, signo: "+", monto: true, glosa: "Remanente de impuesto adicional del Art. 42 del D.L. N° 825, de 1974, del período anterior."}
+  "533": {linea: 109, signo: "-", monto: true, glosa: "Devolución solicitada según el Art. 36, del D.L. N° 825, de 1974 (franquicia exportador), por concepto de impuesto adicional del Art. 42 del D.L. N° 825, de 1974."}
+  "552": {linea: 110, signo: "+", monto: true, glosa: "Monto reintegrado por Devoluciones indebidas de crédito fiscal exportadores del impuesto adicional del Art. 42, del D.L. N° 825, de 1974."}
+  "603": {linea: 111, signo: "=", monto: true, glosa: "Valor que resulte de realizar la operación aritmética de las líneas 101 a 110, de la columna ‘Crédito Imputable del período’."}
+  "506": {linea: 112, signo: "+", monto: true, glosa: "Sin glosa en las instrucciones oficiales"}
+  "507": {linea: 112, signo: "+", monto: false, glosa: "Sin glosa en las instrucciones oficiales"}
+  "556": {linea: 113, signo: "+", monto: true, glosa: "Anticipo del IVA que le han retenido en el período que declara (5% para carne y 12% para harina)."}
+  "557": {linea: 114, signo: "+", monto: true, glosa: "Remanente del anticipo del mes anterior."}
+  "558": {linea: 115, signo: "-", monto: true, glosa: "Las devoluciones a que tuvo lugar el mes anterior."}
+  "543": {linea: 116, signo: "=", monto: true, glosa: "Anticipo del mes, que resulta de la suma de los montos declarados en los Códigos. 556 y 557, menos la devolución del mes anterior declarada en el Cód. 558."}
+  "573": {linea: 117, signo: "-", monto: false, glosa: "Anticipo que resulta de la diferencia positiva entre el Cód. 89, línea 50 y el Cód. 543."}
+  "598": {linea: 117, signo: "-", monto: true, glosa: "Anticipo a imputar (5% para carne y 12% para harina), que resulta del monto declarado en el Cód. 543, con el tope del IVA declarado en el Cód. 89. Las siguientes líneas deben ser l"}
+  "39": {linea: 118, signo: "+", monto: true, glosa: "Monto total de las retenciones de IVA realizadas a terceros por cambio de sujeto con retención total, en el período. Registre el monto total de IVA retenido a terceros por facturas"}
+  "554": {linea: 119, signo: "+", monto: true, glosa: "Monto total de las retenciones de IVA realizadas a terceros por cambio de sujeto con retención parcial, del período."}
+  "736": {linea: 120, signo: "-", monto: true, glosa: "Monto total del IVA retenido por notas de crédito emitidas a terceros por cambio de sujeto con retención total o parcial, del período."}
+  "597": {linea: 121, signo: "+", monto: true, glosa: "Monto total de las retenciones del IVA correspondiente al margen de comercialización del vendedor minorista que corresponde por la venta posterior al público consumidor, del períod"}
+  "100": {linea: 123, signo: "+", monto: true, glosa: "Monto total de IVA retenido a terceros en el periodo, por cambio especial de sujeto con retención total, conforme al inciso séptimo del Art. 3° del Decreto Ley N°825, de 1974."}
+  "101": {linea: 124, signo: "-", monto: true, glosa: "Monto total de ajustes por concepto de IVA asociado a reversiones y contracargos (disputas) solucionadas en el período, siempre que dicho impuesto haya sido devuelto previamente al"}
+  "102": {linea: 125, signo: "-", monto: true, glosa: "Valor nominal del remanente de ajuste registrado en el código [104] del período anterior. Respecto de este valor nominal no procede el reajuste a que refiere el Art. 27 del Decreto"}
+  "103": {linea: 126, signo: "=", monto: true, glosa: "Monto neto de IVA retenido en el período que resulte de restar al código [100] la suma de los códigos [101] y [102]. Si el resultado de la operación es negativo, registre cero. El "}
+  "104": {linea: 127, signo: "=", monto: true, glosa: "Sin signo, el monto negativo que resulte de restar al código [100] la suma de los códigos [101] y [102]. Este monto constituye un remanente de ajuste para el período siguiente. CRÉ"}
+  "725": {linea: 128, signo: "-", monto: false, glosa: "Las empresas constructoras deben registrar el monto del crédito por Sistemas Solares Térmicos incorporados en la construcción de una vivienda, determinado según el Art. 4° de la Le"}
+  "727": {linea: 128, signo: "-", monto: true, glosa: "Suma de los Códigos. 725 y 737."}
+  "737": {linea: 128, signo: "-", monto: false, glosa: "Remanente declarado en el Cód. 728 del mes inmediatamente anterior, reajustado según el Art. 27 del D.L. N° 825, de 1974."}
+  "704": {linea: 129, signo: "-", monto: false, glosa: "Monto pagado por patentes a que se refieren los Art. 129 bis 20 y 129 bis 21 del Código de Aguas, contenido en el D.F.L. N° 1.122, de 1981."}
+  "705": {linea: 129, signo: "-", monto: false, glosa: "Remanente declarado en el Cód. 707 del mes inmediatamente anterior, reajustado según el Art. 27 del D.L. 825, de 1974."}
+  "706": {linea: 129, signo: "-", monto: true, glosa: "Suma de los Códigos. 704 y 705."}
+  "160": {linea: 130, signo: "-", monto: false, glosa: "La cotización adicional pagada en el período, que de acuerdo a lo dispuesto por la Ley N° 18.566, de 198 6, le haya sido solicitada por sus trabajadores. Para dichos efectos tenga "}
+  "161": {linea: 130, signo: "-", monto: false, glosa: "Remanente por concepto de cotización adicional de la Ley N° 18.566 de 1988 declarado en el código Cód. 73 del mes inmediatamente anterior, reajustado según Art. 27 del D.L. N° 825,"}
+  "570": {linea: 130, signo: "-", monto: true, glosa: "Suma de los Códigos. 160 y 161."}
+  "126": {linea: 131, signo: "-", monto: false, glosa: "65% del Débito Fiscal recargado por las empresas constructoras en la venta de inmuebles para habitación construid os por ellas y sobre los contratos generales de construcción que n"}
+  "128": {linea: 131, signo: "-", monto: false, glosa: "Remanente de Crédito Especial de Empresas Constructoras declarado en línea 11 9 Cód. 130 del mes inmediatamente anterior, reajustado según el Art. 27, del D.L. N° 825, de 1974."}
+  "571": {linea: 131, signo: "-", monto: true, glosa: "Suma de los Códigos. 126 y 128."}
+  "568": {linea: 132, signo: "-", monto: false, glosa: "Remanente por concepto de Recuperación de Peajes Transportistas Pasajeros de la Ley N° 19.764, de 2001, declarado en la línea 118, Cód. 591 del mes inmediatamente anterior, reajust"}
+  "572": {linea: 132, signo: "-", monto: false, glosa: "Las empresas de transporte de pasajeros que sean propietarias o arrendatarias con opción de compra, de buses, que presten servicios de transporte rural, interurbano o internacional"}
+  "590": {linea: 132, signo: "-", monto: true, glosa: "Suma de los Códigos. 572 y 568."}
+  "768": {linea: 133, signo: "-", monto: false, glosa: "Las empresas que incurran en desembolsos adicionales o extraordinarios directamente relacionados con la implementación de sistemas de trazabilidad de bienes, que formen parte del c"}
+  "769": {linea: 133, signo: "-", monto: false, glosa: "Remanente de crédito, por concepto de desembolsos adicionales o extraordinarios directamente relacionados con la implementación de sistemas de trazabilidad de bienes a que se refie"}
+  "770": {linea: 133, signo: "-", monto: true, glosa: "Suma de los Códigos. 768 y 769."}
+  "547": {linea: 134, signo: "=", monto: true, glosa: "TOTAL DETERMINADO (líneas 80 a 133)"}
+  "728": {linea: 135, signo: "", monto: true, glosa: "Sin glosa en las instrucciones oficiales"}
+  "707": {linea: 136, signo: "", monto: true, glosa: "Sin glosa en las instrucciones oficiales"}
+  "73": {linea: 137, signo: "", monto: true, glosa: "Sin glosa en las instrucciones oficiales"}
+  "130": {linea: 138, signo: "", monto: true, glosa: "Sin glosa en las instrucciones oficiales"}
+  "591": {linea: 139, signo: "", monto: true, glosa: "Sin glosa en las instrucciones oficiales"}
+  "771": {linea: 140, signo: "", monto: true, glosa: "Sin glosa en las instrucciones oficiales"}
+  "91": {linea: 141, signo: "=", monto: true, glosa: "TOTAL A PAGAR DENTRO DEL PLAZO LEGAL"}
+  "92": {linea: 142, signo: "+", monto: true, glosa: "Reajuste por declaración fuera de plazo (Art. 53 inc. 1°)"}
+  "93": {linea: 143, signo: "+", monto: true, glosa: "Intereses y multas por declaración fuera de plazo"}
+  "94": {linea: 144, signo: "=", monto: true, glosa: "TOTAL A PAGAR CON RECARGO (91 + 92 + 93)"}
+
+# Identidades aritméticas del formulario. El programa las usa para comprobar que
+# lo que trajo del SII cuadra; si una falla, avisa en vez de callarlo.
+#
+# Fuente: anverso del F29 e instrucciones de las líneas 23, 49, 50, 80, 134 y 141.
+identidades:
+  - nombre: "Total débitos"
+    total: "538"
+    suma_lineas: [7, 22]        # "valor que resulte de la operación aritmética de los montos de la línea 7 a 22"
+  - nombre: "Total créditos"
+    total: "537"
+    suma_lineas: [28, 48]       # "...de los montos de la línea 28 a 48"
+  - nombre: "IVA determinado"
+    total: "89"
+    formula: ["538", "-", "537"]
+    solo_si_positivo: true      # si da negativo va al código 77, no al 89
+  - nombre: "Remanente para el período siguiente"
+    total: "77"
+    formula: ["537", "-", "538"]
+    solo_si_positivo: true
+  - nombre: "Total a pagar con recargo"
+    total: "94"
+    formula: ["91", "+", "92", "+", "93"]
+    solo_si_presente: true      # sólo aplica a declaraciones fuera de plazo
+
+# Secciones por rango de línea, para agrupar al mostrar el catálogo.
+secciones:
+  - {desde: 1, hasta: 6, nombre: "Ventas que no generan débito"}
+  - {desde: 7, hasta: 23, nombre: "Débitos"}
+  - {desde: 24, hasta: 27, nombre: "Compras sin derecho a crédito (informativo)"}
+  - {desde: 28, hasta: 49, nombre: "Créditos"}
+  - {desde: 50, hasta: 58, nombre: "Determinación del IVA"}
+  - {desde: 59, hasta: 79, nombre: "Retenciones y PPM"}
+  - {desde: 80, hasta: 80, nombre: "Subtotal del anverso"}
+  - {desde: 81, hasta: 133, nombre: "Impuestos adicionales, cambio de sujeto y créditos especiales"}
+  - {desde: 134, hasta: 200, nombre: "Resultado del ejercicio"}

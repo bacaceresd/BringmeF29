@@ -83,7 +83,7 @@ def test_sin_clave_no_consulta(servidor, monkeypatch):
     monkeypatch.setattr(
         flujo, "obtener", lambda *a, **k: pytest.fail("no debe consultarse el SII sin clave")
     )
-    estado, html = postear(servidor, {"rut": "76.086.428-5", "clave": "", "periodo": "2026-08"})
+    estado, html = postear(servidor, {"rut": "11.111.111-1", "clave": "", "periodo": "2026-08"})
     assert estado == 200
     assert "Falta la clave tributaria" in html
 
@@ -91,26 +91,26 @@ def test_sin_clave_no_consulta(servidor, monkeypatch):
 @requiere_chromium
 def test_la_consulta_devuelve_la_tabla(servidor, config, monkeypatch):
     declaracion = DeclaracionF29(
-        rut=Rut.parsear("76086428-5"),
+        rut=Rut.parsear("11111111-1"),
         periodo=Periodo(2026, 8),
         razon_social="Comercial Acme SpA",
         via="navegador",
         procedencia=GUARDADA,
         lineas=[
             LineaCodigo(c, Decimal(str(v)))
-            for c, v in {"538": 2317063, "537": 4520078, "077": 2203015,
-                         "048": 53572, "151": 386874, "091": 440446}.items()
+            for c, v in {"538": 1900000, "537": 2050000, "077": 150000,
+                         "048": 40000, "151": 300000, "091": 340000}.items()
         ],
     )
     monkeypatch.setattr(flujo, "obtener", lambda *a, **k: flujo.ResultadoObtencion(declaracion))
 
     estado, html = postear(
-        servidor, {"rut": "76.086.428-5", "clave": "secreta", "periodo": "2026-08"}
+        servidor, {"rut": "11.111.111-1", "clave": "secreta", "periodo": "2026-08"}
     )
     assert estado == 200
     assert "Comercial Acme SpA" in html
     assert "Total retenciones a pagar" in html
-    assert "440.446.-" in html
+    assert "340.000.-" in html
     assert "TOTAL A PAGAR F29 AGOSTO 2026" in html
     assert "Lunes 21 de septiembre, 2026" in html
     # La clave nunca se refleja de vuelta en la página.
@@ -122,15 +122,15 @@ def test_la_propuesta_se_rechaza_tambien_desde_la_web(servidor, monkeypatch):
     from bringmef29.modelos import PROPUESTA
 
     declaracion = DeclaracionF29(
-        rut=Rut.parsear("76086428-5"),
+        rut=Rut.parsear("11111111-1"),
         periodo=Periodo(2026, 8),
         procedencia=PROPUESTA,
-        lineas=[LineaCodigo("091", Decimal("440446"))],
+        lineas=[LineaCodigo("091", Decimal("340000"))],
     )
     monkeypatch.setattr(flujo, "obtener", lambda *a, **k: flujo.ResultadoObtencion(declaracion))
 
     estado, html = postear(
-        servidor, {"rut": "76.086.428-5", "clave": "x", "periodo": "2026-08"}
+        servidor, {"rut": "11.111.111-1", "clave": "x", "periodo": "2026-08"}
     )
     assert estado == 200
     assert "propuesta del SII" in html
@@ -153,7 +153,7 @@ def test_no_sirve_archivos_fuera_del_directorio_de_salida(servidor):
 
 
 def test_sirve_lo_que_el_programa_genero(servidor, config):
-    archivo = config.directorio_salida / "760864285" / "202608" / "aviso.pdf"
+    archivo = config.directorio_salida / "111111111" / "202608" / "aviso.pdf"
     archivo.parent.mkdir(parents=True, exist_ok=True)
     archivo.write_bytes(b"%PDF-1.4 falso")
     estado, cuerpo = obtener(servidor + f"/archivo?tipo=pdf&ruta={archivo}")

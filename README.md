@@ -125,27 +125,27 @@ El aviso es una tabla y nada más, agrupada como la escribe un contador:
 
 ```
 IVA
-  (+) IVA DF Boletas electrónicas                      23.030.105.-
-  (+) IVA DF Facturas afectas                           2.317.063.-
-  (=) Total IVA Débito                                  2.317.063.-
+  (+) IVA DF Boletas electrónicas                      10.000.000.-
+  (+) IVA DF Facturas afectas                           1.900.000.-
+  (=) Total IVA Débito                                  1.900.000.-
 
-  (-) IVA CF Facturas afectas                          (1.993.566.-)
-  (+) IVA CF Notas de crédito recibidas                     6.674.-
-  (-) Remanente IVA CF mes anterior                    (2.533.186.-)
-  (=) Total IVA Crédito                                (4.520.078.-)
+  (-) IVA CF Facturas afectas                          (1.200.000.-)
+  (+) IVA CF Notas de crédito recibidas                     50.000.-
+  (-) Remanente IVA CF mes anterior                    (900.000.-)
+  (=) Total IVA Crédito                                (2.050.000.-)
 
-  (=) Remanente IVA CF mes siguiente                    2.203.015.-
+  (=) Remanente IVA CF mes siguiente                    150.000.-
 
 Retenciones
-      Impuesto único 2ª categoría                          53.572.-
-      Honorarios serv. profesionales                      386.874.-
-  (=) Total retenciones a pagar                           440.446.-
+      Impuesto único 2ª categoría                          40.000.-
+      Honorarios serv. profesionales                      300.000.-
+  (=) Total retenciones a pagar                           340.000.-
 
 PPM
-      Base imponible PPM                                13.823.935.-
+      Base imponible PPM                                5.000.000.-
       No paga PPM
 
-TOTAL A PAGAR F29 AGOSTO 2026                            440.446.-
+TOTAL A PAGAR F29 AGOSTO 2026                            340.000.-
 Fecha de vencimiento: Lunes 21 de septiembre, 2026 - 23:59 hrs
 ```
 
@@ -451,7 +451,7 @@ Si una no se cumple, el aviso lo dice encima del monto en vez de callarlo:
 ```
 Revisa estas cifras:
   Total débitos (código 538): el SII trae 9.999.999 y las líneas dan
-  2.317.063 — diferencia 7.682.936
+  1.900.000 — diferencia 7.682.936
 ```
 
 Un descuadre casi siempre significa que el programa **leyó mal una línea**, no que

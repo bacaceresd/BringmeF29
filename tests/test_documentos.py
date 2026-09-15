@@ -40,7 +40,7 @@ def test_contexto_del_aviso(config, declaracion_con_pago):
         declaracion_con_pago, config.cliente("acme")
     )
     assert contexto["razon_social"] == "Comercial Acme SpA"
-    assert contexto["rut"] == "76.086.428-5"
+    assert contexto["rut"] == "11.111.111-1"
     assert contexto["resumen"].hay_que_pagar
     assert contexto["resumen"].total_monto == Decimal(1840000)
     assert "Lunes 22 de septiembre, 2025" in contexto["resumen"].vencimiento_texto
@@ -97,7 +97,7 @@ def test_genera_pdf_e_imagen(config, declaracion_con_pago):
     assert pdf.exists() and pdf.stat().st_size > 3000
     assert pdf.read_bytes().startswith(b"%PDF")
     assert imagen.exists() and imagen.read_bytes().startswith(b"\x89PNG")
-    assert pdf.name == "F29-202508-760864285.pdf"
+    assert pdf.name == "F29-202508-111111111.pdf"
 
     contenido = html.read_text(encoding="utf-8")
     # El CSS no debe llegar escapado: rompería selectores y tipografías.

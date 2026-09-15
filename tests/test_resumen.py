@@ -12,29 +12,29 @@ from bringmef29.rut import Rut
 # PPM, y lo único que entera son las retenciones.
 CASO = {
     # Débitos (línea 7 a 22): boletas + facturas, menos notas de crédito emitidas.
-    "111": 23030105,   # L10  IVA débito de boletas
-    "502": 2317063,    # L7   IVA débito de facturas emitidas
-    "510": 23030105,   # L13  notas de crédito emitidas — resta
-    "538": 2317063,    # L23  TOTAL DÉBITOS
+    "111": 10000000,   # L10  IVA débito de boletas
+    "502": 1900000,    # L7   IVA débito de facturas emitidas
+    "510": 10000000,   # L13  notas de crédito emitidas — resta
+    "538": 1900000,    # L23  TOTAL DÉBITOS
     # Créditos (línea 28 a 48).
-    "520": 1993566,    # L28  facturas recibidas del giro
-    "528": 6674,       # L32  notas de crédito recibidas — resta
-    "504": 2533186,    # L36  remanente del mes anterior
-    "537": 4520078,    # L49  TOTAL CRÉDITOS
+    "520": 1200000,    # L28  facturas recibidas del giro
+    "528": 50000,       # L32  notas de crédito recibidas — resta
+    "504": 900000,    # L36  remanente del mes anterior
+    "537": 2050000,    # L49  TOTAL CRÉDITOS
     # Créditos superan débitos: queda remanente, no hay IVA que pagar.
-    "77": 2203015,     # L50  remanente para el mes siguiente
+    "77": 150000,     # L50  remanente para el mes siguiente
     # Retenciones y PPM.
-    "48": 53572,       # L60  impuesto único 2ª categoría
-    "151": 386874,     # L61  honorarios
+    "48": 40000,       # L60  impuesto único 2ª categoría
+    "151": 300000,     # L61  honorarios
     "62": 0,           # L69  PPM neto determinado
-    "563": 13823935,   # L69  base imponible PPM
-    "91": 440446,      # L141 TOTAL A PAGAR EN PLAZO LEGAL
+    "563": 5000000,   # L69  base imponible PPM
+    "91": 340000,      # L141 TOTAL A PAGAR EN PLAZO LEGAL
 }
 
 
 def declaracion(codigos: dict, periodo: Periodo = Periodo(2026, 8)) -> DeclaracionF29:
     return DeclaracionF29(
-        rut=Rut.parsear("76086428-5"),
+        rut=Rut.parsear("11111111-1"),
         periodo=periodo,
         lineas=[LineaCodigo(c, Decimal(str(v))) for c, v in codigos.items()],
     )
@@ -57,9 +57,9 @@ def lineas_planas(resumen: R.Resumen) -> list[tuple[str, str]]:
 @pytest.mark.parametrize(
     "valor,parentesis,esperado",
     [
-        (23030105, False, "23.030.105.-"),
-        (6674, False, "6.674.-"),
-        (1993566, True, "(1.993.566.-)"),
+        (10000000, False, "10.000.000.-"),
+        (50000, False, "50.000.-"),
+        (1200000, True, "(1.200.000.-)"),
         (0, False, "0.-"),
         (-5000, False, "(5.000.-)"),
         (None, False, "—"),
@@ -82,21 +82,21 @@ def test_grupos_esperados():
 def test_el_iva_sale_como_lo_escribe_un_contador():
     resumen = R.construir(declaracion(CASO))
     iva = dict(lineas_planas(resumen))
-    assert iva["IVA DF Boletas electrónicas"] == "23.030.105.-"
-    assert iva["Total IVA Débito"] == "2.317.063.-"
-    assert iva["IVA CF Facturas afectas"] == "(1.993.566.-)"
-    assert iva["IVA CF Notas de crédito recibidas"] == "6.674.-"
-    assert iva["Remanente IVA CF mes anterior"] == "(2.533.186.-)"
-    assert iva["Total IVA Crédito"] == "(4.520.078.-)"
-    assert iva["Remanente IVA CF mes siguiente (IVA DF − IVA CF)"] == "2.203.015.-"
+    assert iva["IVA DF Boletas electrónicas"] == "10.000.000.-"
+    assert iva["Total IVA Débito"] == "1.900.000.-"
+    assert iva["IVA CF Facturas afectas"] == "(1.200.000.-)"
+    assert iva["IVA CF Notas de crédito recibidas"] == "50.000.-"
+    assert iva["Remanente IVA CF mes anterior"] == "(900.000.-)"
+    assert iva["Total IVA Crédito"] == "(2.050.000.-)"
+    assert iva["Remanente IVA CF mes siguiente (IVA DF − IVA CF)"] == "150.000.-"
 
 
 def test_las_retenciones_se_suman():
     resumen = R.construir(declaracion(CASO))
     filas = dict(lineas_planas(resumen))
-    assert filas["Impuesto único 2ª categoría"] == "53.572.-"
-    assert filas["Honorarios serv. profesionales"] == "386.874.-"
-    assert filas["Total retenciones a pagar"] == "440.446.-"
+    assert filas["Impuesto único 2ª categoría"] == "40.000.-"
+    assert filas["Honorarios serv. profesionales"] == "300.000.-"
+    assert filas["Total retenciones a pagar"] == "340.000.-"
 
 
 def test_sin_ppm_aparece_la_nota_y_no_un_cero():
@@ -116,7 +116,7 @@ def test_con_ppm_no_aparece_la_nota():
 def test_total_y_vencimiento():
     resumen = R.construir(declaracion(CASO), vencimiento_texto="Lunes 21 de septiembre, 2026")
     assert resumen.total_glosa == "TOTAL A PAGAR F29 AGOSTO 2026"
-    assert resumen.total_monto == Decimal(440446)
+    assert resumen.total_monto == Decimal(340000)
     assert resumen.hay_que_pagar
     assert resumen.vencimiento_texto == "Lunes 21 de septiembre, 2026"
 
@@ -154,7 +154,7 @@ def test_avisa_cuando_las_partes_no_suman_el_total():
         "total": {"glosa": "TOTAL", "codigos": ["091"]},
     }
     resumen = R.construir(
-        declaracion({"048": 53572, "151": 386874, "049": 999999, "091": 999999}), layout=layout
+        declaracion({"048": 40000, "151": 300000, "049": 999999, "091": 999999}), layout=layout
     )
     assert len(resumen.descuadres) == 1
     assert "Total retenciones" in resumen.descuadres[0]

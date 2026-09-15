@@ -6,7 +6,7 @@ from bringmef29.rut import Rut
 
 def _declaracion(**codigos) -> DeclaracionF29:
     return DeclaracionF29(
-        rut=Rut.parsear("76.086.428-5"),
+        rut=Rut.parsear("11.111.111-1"),
         periodo=Periodo(2025, 8),
         lineas=[LineaCodigo(c, Decimal(str(v))) for c, v in codigos.items()],
     )

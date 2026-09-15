@@ -29,7 +29,7 @@ def test_sin_claves_no_deja_pasar(tmp_path, monkeypatch):
         monkeypatch.delenv(variable, raising=False)
     ejemplo = tmp_path / "clientes.yml"
     ejemplo.write_text(
-        "clientes:\n  - alias: uno\n    rut: 76.086.428-5\n", encoding="utf-8"
+        "clientes:\n  - alias: uno\n    rut: 11.111.111-1\n", encoding="utf-8"
     )
     monkeypatch.setenv("BRINGMEF29_CONFIG", str(ejemplo))
     chequeo = por_nombre(D.revisar(con_red=False))["Claves tributarias"]
@@ -39,7 +39,7 @@ def test_sin_claves_no_deja_pasar(tmp_path, monkeypatch):
 
 def test_con_clave_en_el_entorno_pasa(tmp_path, monkeypatch):
     ejemplo = tmp_path / "clientes.yml"
-    ejemplo.write_text("clientes:\n  - alias: uno\n    rut: 76.086.428-5\n", encoding="utf-8")
+    ejemplo.write_text("clientes:\n  - alias: uno\n    rut: 11.111.111-1\n", encoding="utf-8")
     monkeypatch.setenv("BRINGMEF29_CONFIG", str(ejemplo))
     monkeypatch.setenv("BRINGMEF29_CLAVE_UNO", "secreta")
     chequeo = por_nombre(D.revisar(con_red=False))["Claves tributarias"]

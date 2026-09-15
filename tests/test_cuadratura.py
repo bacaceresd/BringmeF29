@@ -17,16 +17,16 @@ from bringmef29.rut import Rut
 # Declaración que cuadra entera: débitos y créditos suman sus totales, y como el
 # crédito supera al débito queda remanente para el mes siguiente.
 CUADRA = {
-    "111": 23030105, "502": 2317063, "510": 23030105, "538": 2317063,
-    "520": 1993566, "528": 6674, "504": 2533186, "537": 4520078,
-    "77": 2203015,
-    "48": 53572, "151": 386874, "62": 0, "563": 13823935, "91": 440446,
+    "111": 10000000, "502": 1900000, "510": 10000000, "538": 1900000,
+    "520": 1200000, "528": 50000, "504": 900000, "537": 2050000,
+    "77": 150000,
+    "48": 40000, "151": 300000, "62": 0, "563": 5000000, "91": 340000,
 }
 
 
 def declaracion(codigos: dict) -> DeclaracionF29:
     return DeclaracionF29(
-        rut=Rut.parsear("76086428-5"),
+        rut=Rut.parsear("11111111-1"),
         periodo=Periodo(2026, 8),
         lineas=[LineaCodigo(c, Decimal(str(v))) for c, v in codigos.items()],
     )
@@ -111,8 +111,8 @@ def test_detecta_un_total_de_debitos_que_no_suma():
     assert "Total débitos" in nombres
     problema = next(d for d in descuadres if d.nombre == "Total débitos")
     assert problema.declarado == Decimal(9999999)
-    assert problema.calculado == Decimal(2317063)
-    assert problema.diferencia == Decimal(7682936)
+    assert problema.calculado == Decimal(1900000)
+    assert problema.diferencia == Decimal(8099999)
     assert "538" in str(problema)
 
 
@@ -144,7 +144,7 @@ def test_detecta_un_iva_determinado_equivocado():
 
 
 def test_total_con_recargo():
-    fuera_de_plazo = {**CUADRA, "92": 5000, "93": 20000, "94": 465446}
+    fuera_de_plazo = {**CUADRA, "92": 5000, "93": 20000, "94": 365000}
     assert verificar(declaracion(fuera_de_plazo)) == []
     mal = {**fuera_de_plazo, "94": 999999}
     assert any(d.codigo == "94" for d in verificar(declaracion(mal)))
@@ -161,4 +161,4 @@ def test_una_declaracion_vacia_no_produce_descuadres():
 def test_el_texto_del_descuadre_es_legible():
     problema = verificar(declaracion({**CUADRA, "538": 9999999}))[0]
     texto = str(problema)
-    assert "9.999.999" in texto and "2.317.063" in texto
+    assert "9.999.999" in texto and "1.900.000" in texto

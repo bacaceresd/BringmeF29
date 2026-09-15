@@ -170,7 +170,7 @@ def vista_formulario(error: str = "", valores: dict | None = None) -> bytes:
       <form method="post" action="/consultar" id="formulario">
         <label for="rut"><span>Ingrese RUT</span>
           <input id="rut" name="rut" inputmode="text" autocomplete="off" required
-                 placeholder="76.086.428-5" value="{html.escape(v.get('rut',''))}"></label>
+                 placeholder="Sin puntos ni guión" value="{html.escape(v.get('rut',''))}"></label>
         <label for="clave"><span>Clave tributaria</span>
           <input id="clave" name="clave" type="password" autocomplete="off" required></label>
         <div class="duo">

@@ -28,7 +28,7 @@ def test_correo_se_compone_sin_enviar(config, declaracion_con_pago, tmp_path):
 
     cuerpo = mensaje.get_body(preferencelist=("plain",)).get_content()
     assert "$1.840.000" in cuerpo
-    assert "76.086.428-5" in cuerpo
+    assert "11.111.111-1" in cuerpo
     assert "Lunes 22 de septiembre, 2025" in cuerpo
     assert "00-123-45678-90" in cuerpo
 

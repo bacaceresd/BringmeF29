@@ -11,11 +11,11 @@
 # Quién emite el aviso
 # --------------------------------------------------------------------------- #
 estudio:
-  nombre: "BC Consulting"
-  rut: "77.111.222-6"
-  correo: "contacto@bcconsulting.cl"
+  nombre: "Nombre de tu estudio"
+  rut: "33.333.333-3"
+  correo: "contacto@tuestudio.cl"
   telefono: "+56 9 1234 5678"
-  sitio_web: "www.bcconsulting.cl"
+  sitio_web: "www.tuestudio.cl"
   # Se incrusta en el PDF y en la imagen de WhatsApp. PNG o JPG, fondo transparente
   # o claro para el PDF. Ruta relativa a la raíz del proyecto.
   logo: "plantillas/activos/logo.png"
@@ -26,12 +26,12 @@ estudio:
 pago:
   # transferencia = te transfieren a ti | sii = pagan directo en el SII | ambos
   modo: "ambos"
-  titular: "BC Consulting SpA"
-  rut_titular: "77.111.222-6"
+  titular: "Titular de la cuenta"
+  rut_titular: "33.333.333-3"
   banco: "Banco de Chile"
   tipo_cuenta: "Cuenta Corriente"
   numero_cuenta: "00-123-45678-90"
-  correo_confirmacion: "pagos@bcconsulting.cl"
+  correo_confirmacion: "pagos@tuestudio.cl"
   url_pago_sii: "https://www.sii.cl/servicios_online/1044-.html"
   nota: >
     Una vez transferido, envíanos el comprobante para dejar el pago
@@ -44,11 +44,11 @@ correo:
   servidor: "smtp.gmail.com"
   puerto: 587
   seguridad: "starttls"          # starttls | ssl | ninguna
-  usuario: "contacto@bcconsulting.cl"
+  usuario: "contacto@tuestudio.cl"
   clave: "env:BRINGMEF29_SMTP_CLAVE"
-  remitente: "contacto@bcconsulting.cl"
-  nombre_remitente: "BC Consulting"
-  responder_a: "contacto@bcconsulting.cl"
+  remitente: "contacto@tuestudio.cl"
+  nombre_remitente: "Nombre de tu estudio"
+  responder_a: "contacto@tuestudio.cl"
   # Campos disponibles: {periodo} {periodo_codigo} {razon_social} {rut} {folio} {monto}
   asunto: "F29 {periodo} — {razon_social}"
 
@@ -114,7 +114,7 @@ clientes:
   # llamas en la línea de comandos; la razón social es la que sale en el aviso.
   - alias: "cliente-1"
     razon_social: "Razón social del contribuyente"
-    rut: "76.086.428-5"
+    rut: "11.111.111-1"
     nombre_contacto: "Nombre de quien recibe el aviso"
     # Define el plazo del F29: día 20 del mes siguiente en vez del día 12.
     facturador_electronico: true
@@ -131,7 +131,7 @@ clientes:
 
   - alias: "cliente-2"
     razon_social: "Razón social del segundo contribuyente"
-    rut: "77.222.333-1"
+    rut: "22.222.222-2"
     nombre_contacto: "Nombre de contacto"
     correo: ["contacto@otraempresa.cl"]
     whatsapp: "+56 9 3333 4444"

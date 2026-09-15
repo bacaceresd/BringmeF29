@@ -147,7 +147,7 @@ def _construir_linea(cruda: dict, declaracion: DeclaracionF29) -> LineaFormulari
 
 
 def monto(valor: Decimal | int | float | None) -> str:
-    """``2317063`` → ``2.317.063``. Una casilla vacía se muestra vacía."""
+    """``1900000`` → ``1.900.000``. Una casilla vacía se muestra vacía."""
     if valor is None:
         return ""
     return f"{int(round(float(valor))):,}".replace(",", ".")

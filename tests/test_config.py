@@ -17,8 +17,8 @@ def test_carga_secciones(config):
 
 def test_busca_cliente_por_alias_y_por_rut(config):
     por_alias = config.cliente("acme")
-    assert por_alias.rut == Rut.parsear("76086428-5")
-    assert config.cliente("76.086.428-5") is por_alias
+    assert por_alias.rut == Rut.parsear("11111111-1")
+    assert config.cliente("11.111.111-1") is por_alias
     assert config.cliente("ACME") is por_alias
 
 
@@ -40,7 +40,7 @@ def test_cliente_sin_rut_falla():
 
 def test_correo_como_texto_separado_por_comas():
     datos = dict(CONFIG_BASE)
-    datos = {**datos, "clientes": [{"alias": "x", "rut": "76086428-5",
+    datos = {**datos, "clientes": [{"alias": "x", "rut": "11111111-1",
                                     "correo": "a@x.cl, b@x.cl"}]}
     cliente = modulo_config.desde_dict(datos).cliente("x")
     assert cliente.correo == ["a@x.cl", "b@x.cl"]
@@ -66,7 +66,7 @@ def test_clave_sii_desde_variable_por_alias(config, monkeypatch):
 
 def test_clave_sii_desde_el_almacen(config, clave_maestra, monkeypatch):
     monkeypatch.delenv("BRINGMEF29_CLAVE_ACME", raising=False)
-    AlmacenClaves(config.ruta_almacen_claves).guardar("76086428-5", "clave-guardada")
+    AlmacenClaves(config.ruta_almacen_claves).guardar("11111111-1", "clave-guardada")
     assert config.clave_sii(config.cliente("acme")) == "clave-guardada"
 
 
@@ -96,6 +96,6 @@ def test_el_ejemplo_versionado_es_cargable(monkeypatch, tmp_path):
     config = modulo_config.cargar(ejemplo)
 
     assert config.clientes
-    assert config.cliente("cliente-1").rut == Rut.parsear("76.086.428-5")
+    assert config.cliente("cliente-1").rut == Rut.parsear("11.111.111-1")
     assert Rut.parsear(config.estudio.rut)
     assert Rut.parsear(config.pago.rut_titular)

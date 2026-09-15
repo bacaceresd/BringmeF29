@@ -191,7 +191,7 @@ def _periodo_en_mayusculas(periodo: Periodo) -> str:
 
 
 def monto_contable(valor: Decimal | int | float | None, *, parentesis: bool = False) -> str:
-    """``23030105`` → ``23.030.105.-``; entre paréntesis cuando la línea resta."""
+    """``10000000`` → ``10.000.000.-``; entre paréntesis cuando la línea resta."""
     if valor is None:
         return "—"
     entero = int(round(float(valor)))

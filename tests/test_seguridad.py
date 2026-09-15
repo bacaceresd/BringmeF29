@@ -42,25 +42,25 @@ def test_clave_maestra_malformada_es_rechazada(monkeypatch):
 
 def test_almacen_guarda_cifrado_y_con_permisos_restringidos(tmp_path, clave_maestra):
     almacen = AlmacenClaves(tmp_path / "claves.json")
-    almacen.guardar("76.086.428-5", "ClaveDelCliente", nota="acme")
+    almacen.guardar("11.111.111-1", "ClaveDelCliente", nota="acme")
 
     contenido = (tmp_path / "claves.json").read_text(encoding="utf-8")
     assert "ClaveDelCliente" not in contenido
-    assert json.loads(contenido)["76.086.428-5"]["nota"] == "acme"
+    assert json.loads(contenido)["11.111.111-1"]["nota"] == "acme"
 
     modo = stat.S_IMODE(os.stat(tmp_path / "claves.json").st_mode)
     assert modo == 0o600
 
-    assert almacen.obtener("76.086.428-5") == "ClaveDelCliente"
-    assert almacen.ruts() == ["76.086.428-5"]
+    assert almacen.obtener("11.111.111-1") == "ClaveDelCliente"
+    assert almacen.ruts() == ["11.111.111-1"]
 
 
 def test_almacen_elimina(tmp_path, clave_maestra):
     almacen = AlmacenClaves(tmp_path / "claves.json")
-    almacen.guardar("76.086.428-5", "x")
-    assert almacen.eliminar("76.086.428-5")
-    assert not almacen.eliminar("76.086.428-5")
-    assert almacen.obtener("76.086.428-5") is None
+    almacen.guardar("11.111.111-1", "x")
+    assert almacen.eliminar("11.111.111-1")
+    assert not almacen.eliminar("11.111.111-1")
+    assert almacen.obtener("11.111.111-1") is None
 
 
 def test_almacen_rechaza_archivo_legible_por_otros(tmp_path, clave_maestra):
@@ -68,7 +68,7 @@ def test_almacen_rechaza_archivo_legible_por_otros(tmp_path, clave_maestra):
     ruta.write_text("{}", encoding="utf-8")
     os.chmod(ruta, 0o644)
     with pytest.raises(ErrorSeguridad, match="legible por otros"):
-        AlmacenClaves(ruta).obtener("76.086.428-5")
+        AlmacenClaves(ruta).obtener("11.111.111-1")
 
 
 @pytest.mark.parametrize(

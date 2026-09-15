@@ -15,26 +15,26 @@ from .conftest import requiere_chromium
 # entera son las retenciones. Las liquidaciones factura emitidas (818) anulan
 # el débito de las boletas.
 CASO = {
-    "586": 8821, "142": 55958303,
-    "503": 22, "502": 2317063,
-    "110": 7144, "111": 23030105,
-    "817": 29, "818": 23030105,
-    "538": 2317063,
-    "511": 1986892,
-    "519": 25, "520": 1993566,
-    "527": 3, "528": 6674,
-    "504": 2533186,
-    "537": 4520078,
-    "77": 2203015,
-    "48": 53572, "151": 386874,
-    "30": 13823935,
-    "595": 440446, "547": 440446, "91": 440446,
+    "586": 500, "142": 20000000,
+    "503": 12, "502": 1900000,
+    "110": 400, "111": 10000000,
+    "817": 10, "818": 10000000,
+    "538": 1900000,
+    "511": 1150000,
+    "519": 15, "520": 1200000,
+    "527": 2, "528": 50000,
+    "504": 900000,
+    "537": 2050000,
+    "77": 150000,
+    "48": 40000, "151": 300000,
+    "30": 5000000,
+    "595": 340000, "547": 340000, "91": 340000,
 }
 
 
 def declaracion(codigos: dict = None) -> DeclaracionF29:
     return DeclaracionF29(
-        rut=Rut.parsear("76086428-5"),
+        rut=Rut.parsear("11111111-1"),
         periodo=Periodo(2026, 8),
         razon_social="Razón social",
         procedencia=GUARDADA,
@@ -110,14 +110,14 @@ def test_una_linea_cuenta_por_cualquiera_de_sus_casillas():
     assert not linea.monto.tiene_valor
     assert linea.tiene_valor
     perdida = next(c for c in linea.extra if c.codigo == "30")
-    assert perdida.valor == Decimal(13823935)
+    assert perdida.valor == Decimal(5000000)
     assert perdida.etiqueta == "Monto pérdida Art. 90"
 
 
 def test_las_cantidades_de_documentos_viajan_con_su_monto():
     boletas = lineas_de(F.construir(declaracion()))[10]
-    assert boletas.cantidad.codigo == "110" and boletas.cantidad.valor == Decimal(7144)
-    assert boletas.monto.codigo == "111" and boletas.monto.valor == Decimal(23030105)
+    assert boletas.cantidad.codigo == "110" and boletas.cantidad.valor == Decimal(400)
+    assert boletas.monto.codigo == "111" and boletas.monto.valor == Decimal(10000000)
 
 
 def test_los_totales_quedan_marcados():
@@ -168,7 +168,7 @@ def test_un_total_alterado_se_detecta():
 
 @pytest.mark.parametrize(
     "valor,esperado",
-    [(2317063, "2.317.063"), (0, "0"), (None, ""), (Decimal("6674"), "6.674")],
+    [(1900000, "1.900.000"), (0, "0"), (None, ""), (Decimal("50000"), "50.000")],
 )
 def test_formato_de_monto(valor, esperado):
     assert F.monto(valor) == esperado
@@ -195,7 +195,7 @@ def test_genera_los_tres_exportables(config, tmp_path):
 
     html = next(tmp_path.glob("*-formulario.html")).read_text(encoding="utf-8")
     assert "DÉBITOS Y VENTAS" in html
-    assert "2.317.063" in html
+    assert "1.900.000" in html
     assert ".seccion{margin-bottom" in html          # el CSS llega sin escapar
     assert "&gt;" not in html.split("</style>")[0]
 

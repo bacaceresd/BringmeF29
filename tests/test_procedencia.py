@@ -109,7 +109,7 @@ def test_lee_los_codigos_desde_los_campos_del_formulario(nombre):
 
 def test_ignora_los_campos_que_no_son_codigos():
     campos = [
-        {"nombre": "rutBuscar", "valor": "76086428"},
+        {"nombre": "rutBuscar", "valor": "11111111"},
         {"nombre": "csrf_token", "valor": "abc"},
         {"nombre": "", "valor": "9"},
         {"nombre": "codigo_538", "valor": ""},
@@ -132,7 +132,7 @@ def test_el_primer_valor_de_un_codigo_repetido_gana():
 
 def _declaracion(procedencia: str) -> DeclaracionF29:
     return DeclaracionF29(
-        rut=Rut.parsear("76086428-5"),
+        rut=Rut.parsear("11111111-1"),
         periodo=Periodo(2025, 8),
         procedencia=procedencia,
         lineas=[LineaCodigo("091", Decimal("1840000"))],

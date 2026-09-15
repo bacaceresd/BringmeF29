@@ -17,7 +17,7 @@ CONFIG_BASE = {
     "pago": {
         "modo": "ambos",
         "titular": "Estudio de Prueba SpA",
-        "rut_titular": "77.111.222-6",
+        "rut_titular": "33.333.333-3",
         "banco": "Banco de Chile",
         "tipo_cuenta": "Cuenta Corriente",
         "numero_cuenta": "00-123-45678-90",
@@ -33,7 +33,7 @@ CONFIG_BASE = {
     "clientes": [
         {
             "alias": "acme",
-            "rut": "76.086.428-5",
+            "rut": "11.111.111-1",
             "razon_social": "Comercial Acme SpA",
             "nombre_contacto": "Ana",
             "correo": ["ana@acme.cl"],
@@ -61,7 +61,7 @@ def config(tmp_path):
 @pytest.fixture
 def declaracion_con_pago():
     return DeclaracionF29(
-        rut=Rut.parsear("76.086.428-5"),
+        rut=Rut.parsear("11.111.111-1"),
         periodo=Periodo(2025, 8),
         folio="7654321098",
         estado="Vigente",
@@ -83,7 +83,7 @@ def declaracion_con_pago():
 @pytest.fixture
 def declaracion_sin_pago():
     return DeclaracionF29(
-        rut=Rut.parsear("76.086.428-5"),
+        rut=Rut.parsear("11.111.111-1"),
         periodo=Periodo(2025, 8),
         folio="7654321099",
         razon_social="Comercial Acme SpA",

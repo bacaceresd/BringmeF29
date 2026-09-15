@@ -18,18 +18,18 @@ from bringmef29.sii.errores import DeclaracionEsPropuesta, DeclaracionGuardadaNo
 from .conftest import requiere_chromium
 
 CASO = {
-    "586": 8821, "142": 55958303, "503": 22, "502": 2317063,
-    "110": 7144, "111": 23030105, "817": 29, "818": 23030105, "538": 2317063,
-    "511": 1986892, "519": 25, "520": 1993566, "527": 3, "528": 6674,
-    "504": 2533186, "537": 4520078, "77": 2203015,
-    "48": 53572, "151": 386874, "30": 13823935,
-    "595": 440446, "547": 440446, "91": 440446,
+    "586": 500, "142": 20000000, "503": 12, "502": 1900000,
+    "110": 400, "111": 10000000, "817": 10, "818": 10000000, "538": 1900000,
+    "511": 1150000, "519": 15, "520": 1200000, "527": 2, "528": 50000,
+    "504": 900000, "537": 2050000, "77": 150000,
+    "48": 40000, "151": 300000, "30": 5000000,
+    "595": 340000, "547": 340000, "91": 340000,
 }
 
 
 def declaracion(codigos: dict = None, procedencia: str = GUARDADA) -> DeclaracionF29:
     return DeclaracionF29(
-        rut=Rut.parsear("76086428-5"),
+        rut=Rut.parsear("11111111-1"),
         periodo=Periodo(2026, 8),
         razon_social="Razón social",
         folio="",
@@ -83,7 +83,7 @@ def test_del_sii_al_correo_y_al_whatsapp(config, sii_de_mentira, correos, monkey
         assert Path(ruta).exists(), ruta
 
     # La declaración quedó guardada para poder reimprimir sin volver al SII.
-    guardado = config.directorio_salida / "760864285" / "202608" / "declaracion.json"
+    guardado = config.directorio_salida / "111111111" / "202608" / "declaracion.json"
     assert guardado.exists()
 
     # El correo salió con el formulario adjunto, no sólo con el resumen.
@@ -106,7 +106,7 @@ def test_el_monto_del_aviso_es_el_del_formulario(config, sii_de_mentira, correos
     flujo.procesar(config, "acme", Periodo(2026, 8), exportar=())
 
     cuerpo = correos[0].get_body(preferencelist=("plain",)).get_content()
-    assert "$440.446" in cuerpo
+    assert "$340.000" in cuerpo
     assert "Lunes 21 de septiembre, 2026" in cuerpo
 
 
@@ -165,10 +165,10 @@ def test_se_puede_reimprimir_desde_lo_guardado(config, sii_de_mentira, correos, 
     flujo.procesar(config, "acme", Periodo(2026, 8), exportar=(), enviar_correo=False,
                    enviar_whatsapp=False)
 
-    guardado = str(config.directorio_salida / "760864285" / "202608" / "declaracion.json")
+    guardado = str(config.directorio_salida / "111111111" / "202608" / "declaracion.json")
     monkeypatch.setattr(flujo, "obtener", lambda *a, **k: pytest.fail("no debe ir al SII"))
 
     aviso = flujo.procesar(config, "acme", Periodo(2026, 8), desde_archivo=guardado,
                            simular_envio=True, exportar=("compacto",))
     assert Path(aviso.formulario_pdf).exists()
-    assert aviso.declaracion.monto_a_pagar == Decimal(440446)
+    assert aviso.declaracion.monto_a_pagar == Decimal(340000)

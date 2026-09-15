@@ -234,6 +234,8 @@ codigos:
   "92": {linea: 142, signo: "+", monto: true, glosa: "Reajuste por declaración fuera de plazo (Art. 53 inc. 1°)"}
   "93": {linea: 143, signo: "+", monto: true, glosa: "Intereses y multas por declaración fuera de plazo"}
   "94": {linea: 144, signo: "=", monto: true, glosa: "TOTAL A PAGAR CON RECARGO (91 + 92 + 93)"}
+  "817": {linea: 18, signo: "-", monto: false, glosa: "Cantidad de liquidaciones factura emitidas"}
+  "818": {linea: 18, signo: "-", monto: true, glosa: "IVA débito de liquidaciones factura emitidas (resta del débito)"}
 
 # Identidades aritméticas del formulario. El programa las usa para comprobar que
 # lo que trajo del SII cuadra; si una falla, avisa en vez de callarlo.

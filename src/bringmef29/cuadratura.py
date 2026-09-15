@@ -99,7 +99,6 @@ def _normalizar(codigo: str | int) -> str:
 def verificar(declaracion: DeclaracionF29, *, catalogo: dict | None = None) -> list[Descuadre]:
     """Devuelve los descuadres encontrados; lista vacía si todo calza."""
     catalogo = catalogo if catalogo is not None else cargar_catalogo()
-    codigos = catalogo.get("codigos", {})
     descuadres: list[Descuadre] = []
 
     for identidad in catalogo.get("identidades", []):
@@ -107,7 +106,7 @@ def verificar(declaracion: DeclaracionF29, *, catalogo: dict | None = None) -> l
         declarado = declaracion.valor(total_codigo)
 
         if "suma_lineas" in identidad:
-            calculado = _sumar_lineas(declaracion, codigos, *identidad["suma_lineas"])
+            calculado = _sumar_lineas(declaracion, *identidad["suma_lineas"])
         else:
             calculado = _aplicar_formula(declaracion, identidad["formula"])
 
@@ -137,24 +136,30 @@ def verificar(declaracion: DeclaracionF29, *, catalogo: dict | None = None) -> l
     return descuadres
 
 
-def _sumar_lineas(
-    declaracion: DeclaracionF29, codigos: dict, desde: int, hasta: int
-) -> Decimal | None:
-    """Suma los montos de un rango de líneas, respetando el signo del formulario.
+def _sumar_lineas(declaracion: DeclaracionF29, desde: int, hasta: int) -> Decimal | None:
+    """Suma los montos de un rango de líneas, con el signo que les da el formulario.
 
-    Sólo entra el código de cada línea marcado como ``monto``: los demás son
-    cantidades de documentos, tasas o bases imponibles, que no suman.
+    Las líneas salen de ``recursos/formulario_f29.yml``, transcrito del borrador
+    que entrega el SII: es la numeración vigente, y trae líneas que el PDF del
+    formulario no tenía. Sólo entra el código del monto de cada línea; las
+    cantidades de documentos, tasas y bases no suman.
     """
+    from .formulario import cargar_estructura
+
     total = Decimal(0)
     hubo_alguno = False
-    for codigo, datos in codigos.items():
-        if not datos.get("monto") or not desde <= datos["linea"] <= hasta:
-            continue
-        valor = declaracion.valor(codigo)
-        if valor is None:
-            continue
-        hubo_alguno = True
-        total += -valor if datos.get("signo") == "-" else valor
+    for seccion in cargar_estructura().get("secciones", []):
+        for linea in seccion.get("lineas", []):
+            numero = int(linea.get("n", 0))
+            codigo = linea.get("codigo")
+            signo = linea.get("signo", "")
+            if not codigo or not desde <= numero <= hasta or signo not in ("+", "-"):
+                continue
+            valor = declaracion.valor(str(codigo))
+            if valor is None:
+                continue
+            hubo_alguno = True
+            total += -valor if signo == "-" else valor
     return total if hubo_alguno else None
 
 

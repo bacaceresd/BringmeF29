@@ -1,0 +1,108 @@
+/* Formulario 29 por secciones. Cada bloque del formulario es una tabla aparte,
+   con aire entre una y otra: el papel se lee como el borrador del SII, no como
+   una sola parrilla continua. */
+
+*{box-sizing:border-box;margin:0;padding:0}
+
+@page{size:A4;margin:13mm 11mm}
+
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",
+              system-ui,"Helvetica Neue",Arial,sans-serif;
+  color:#000;background:#fff;font-size:8.2pt;line-height:1.35;
+  -webkit-print-color-adjust:exact;print-color-adjust:exact;
+  letter-spacing:-.01em;
+}
+.hoja{max-width:188mm;margin:0 auto}
+
+/* --- cabecera --- */
+.cabecera{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-bottom:9px}
+.logo{max-height:34px;max-width:140px;object-fit:contain;display:block}
+.estudio{font-size:12pt;font-weight:700;letter-spacing:-.02em}
+.titulo-doc{text-align:right}
+.f29{font-size:8pt;text-transform:uppercase;letter-spacing:.09em;color:#6c6c70}
+.periodo{font-size:13pt;font-weight:700;letter-spacing:-.02em}
+
+/* --- identificación --- */
+.identificacion{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:7px 14px;
+  background:#f2f2f7;border-radius:9px;padding:10px 13px;margin-bottom:14px;
+}
+.identificacion>div{display:flex;flex-direction:column;min-width:0}
+.identificacion .ancho{grid-column:span 2}
+.identificacion .k{font-size:6.6pt;text-transform:uppercase;letter-spacing:.07em;color:#6c6c70}
+.identificacion .v{font-size:9pt;font-weight:600;overflow-wrap:anywhere}
+
+.advertencia{
+  background:#ffeceb;border-left:3px solid #ff3b30;border-radius:0 7px 7px 0;
+  padding:8px 12px;margin-bottom:13px;font-size:8pt;color:#8c1d16;
+}
+
+/* --- secciones: cada una su propia tabla, separadas --- */
+.seccion{margin-bottom:13px;page-break-inside:avoid;break-inside:avoid}
+.seccion-titulo{display:flex;align-items:baseline;gap:8px;padding:0 3px 4px;flex-wrap:wrap}
+.seccion-titulo .t{font-size:8pt;font-weight:700;text-transform:uppercase;letter-spacing:.07em}
+.seccion-titulo .s{font-size:7.4pt;color:#6c6c70}
+
+.tabla{
+  width:100%;border-collapse:separate;border-spacing:0;
+  border:1px solid #d9d9de;border-radius:9px;overflow:hidden;
+}
+.tabla thead th{
+  background:#f2f2f7;font-size:6.5pt;font-weight:600;text-transform:uppercase;
+  letter-spacing:.06em;color:#6c6c70;text-align:left;padding:5px 8px;
+  border-bottom:1px solid #d9d9de;
+}
+.tabla td{padding:4.5px 8px;border-bottom:1px solid #ececf0;vertical-align:top}
+.tabla tbody tr:last-child td{border-bottom:0}
+
+.ln{width:30px;color:#8e8e93;font-variant-numeric:tabular-nums;text-align:right}
+.gl{min-width:0}
+.ct,.mt{white-space:nowrap;font-variant-numeric:tabular-nums;text-align:right}
+.ct{width:104px}
+.mt{width:112px}
+.sg{width:14px;text-align:center;color:#8e8e93;font-weight:600}
+.tabla thead .ct,.tabla thead .mt{text-align:right}
+
+/* el código va pegado a su casilla, como en el formulario */
+.cod{
+  display:inline-block;min-width:26px;margin-right:6px;padding:0 3px;
+  background:#eef4fd;color:#0a58b0;border-radius:3px;
+  font-size:6.6pt;font-weight:600;text-align:center;vertical-align:1px;
+  font-variant-numeric:tabular-nums;
+}
+.extra{display:block;margin-top:2px;color:#6c6c70;font-size:7pt}
+.extra .ex{display:inline-block;margin-right:9px;white-space:nowrap}
+.extra .ex i{font-style:normal;margin-right:4px}
+.extra .ex b{
+  display:inline-block;margin-right:4px;padding:0 3px;background:#f2f2f7;
+  border-radius:3px;font-size:6.4pt;font-weight:600;color:#6c6c70;
+}
+
+.tabla tr.total td{font-weight:700;background:#fafafc}
+.tabla tr.destacar td{background:#f4f9ff}
+.tabla tr.vacia td{color:#b9b9be}
+.tabla tr.vacia .cod{background:#f5f5f7;color:#a9a9ae}
+
+/* --- cierre --- */
+.cierre{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  background:#fff3e0;border-radius:9px;padding:11px 15px;margin-top:4px;
+}
+.cierre.sin-pago{background:#e9f7ee}
+.cierre-glosa{font-size:8.6pt;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.cierre-monto{font-size:17pt;font-weight:700;letter-spacing:-.03em;font-variant-numeric:tabular-nums;color:#b25000}
+.cierre.sin-pago .cierre-monto{color:#1f7a45}
+.vencimiento{margin-top:7px;font-size:8.4pt}
+
+.descuadre{
+  margin-top:11px;padding:8px 12px;font-size:7.8pt;
+  background:#fff8e6;border-left:3px solid #b25000;border-radius:0 7px 7px 0;color:#6b4300;
+}
+.descuadre ul{margin:3px 0 0 15px}
+
+.pie{
+  margin-top:14px;padding-top:7px;border-top:1px solid #ececf0;
+  display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;
+  font-size:6.8pt;color:#8e8e93;
+}

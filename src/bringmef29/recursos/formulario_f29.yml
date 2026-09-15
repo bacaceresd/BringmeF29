@@ -1,0 +1,180 @@
+# Estructura del Formulario 29: secciones, líneas y códigos.
+#
+# Transcrita del borrador que entrega el portal del SII
+# (www4.sii.cl/rfiInternet — vista PPTA-F29-VER), que es la numeración de líneas
+# vigente. El catálogo de glosas y efectos por código está en codigos_f29.yml,
+# generado desde las instrucciones oficiales.
+#
+# Por cada línea:
+#   n          número de línea del formulario
+#   glosa      el texto del formulario
+#   cantidad   código de la columna "Cantidad de documentos", si la línea tiene
+#   codigo     código de la columna del monto
+#   signo      "+" suma, "-" resta, "=" total del bloque, "" no entra en totales
+#   extra      otros códigos de la línea (bases, tasas, créditos), como
+#              [{etiqueta, codigo}] — se muestran en el formulario completo
+#
+# Las secciones se dibujan como tablas separadas, con su título encima.
+
+secciones:
+
+  # ===================== DÉBITOS Y VENTAS =====================
+  - titulo: "DÉBITOS Y VENTAS"
+    subtitulo: "Ventas y/o servicios prestados · Información de ingresos"
+    columnas: ["Cantidad de documentos", "Monto neto"]
+    lineas:
+      - {n: 1,  glosa: "Exportaciones", cantidad: "585", codigo: "20"}
+      - {n: 2,  glosa: "Ventas y/o Servicios prestados Exentos o No Gravados del giro", cantidad: "586", codigo: "142"}
+      - {n: 3,  glosa: "Ventas con retención sobre el margen de comercialización (contribuyentes retenidos)", cantidad: "731", codigo: "732"}
+      - {n: 4,  glosa: "Ventas y/o Servicios prestados Exentos o No Gravados que no son del giro", cantidad: "714", codigo: "715"}
+      - {n: 5,  glosa: "Facturas de Compra recibidas con retención total y Factura de Inicio emitida", cantidad: "515", codigo: "587"}
+      - {n: 6,  glosa: "Facturas de compra recibidas con retención parcial (total neto)", codigo: "720"}
+
+  - titulo: "DÉBITOS Y VENTAS"
+    subtitulo: "Genera débito"
+    columnas: ["Cantidad de documentos", "Débitos"]
+    lineas:
+      - {n: 7,  glosa: "Facturas emitidas por ventas y servicios del giro, o por cuenta de terceros", cantidad: "503", codigo: "502", signo: "+"}
+      - {n: 8,  glosa: "Facturas emitidas por la venta de bienes inmuebles afectas a IVA", cantidad: "763", codigo: "764", signo: "+"}
+      - {n: 9,  glosa: "Facturas y Notas de Débito por ventas y servicios que no son del giro (activo fijo y otros)", cantidad: "716", codigo: "717", signo: "+"}
+      - {n: 10, glosa: "Boletas", cantidad: "110", codigo: "111", signo: "+"}
+      - {n: 11, glosa: "Comprobantes o recibos de pago generados en transacciones pagadas por medios electrónicos", cantidad: "758", codigo: "759", signo: "+"}
+      - {n: 12, glosa: "Notas de débito emitidas del giro y recibidas de terceros por retención parcial de cambio de sujeto", cantidad: "512", codigo: "513", signo: "+"}
+      - {n: 13, glosa: "Notas de crédito emitidas por facturas del giro y recibidas de terceros por retención parcial de cambio de sujeto", cantidad: "509", codigo: "510", signo: "-"}
+      - {n: 14, glosa: "Notas de crédito emitidas por vales de máquinas autorizadas por el Servicio", cantidad: "708", codigo: "709", signo: "-"}
+      - {n: 15, glosa: "Notas de crédito emitidas por ventas y servicios que no son del giro (activo fijo y otros)", cantidad: "733", codigo: "734", signo: "-"}
+      - {n: 16, glosa: "Facturas de compra recibidas con retención parcial (contribuyentes retenidos)", cantidad: "516", codigo: "517", signo: "+"}
+      - {n: 17, glosa: "Liquidación y Liquidación Factura recibidas (suma débito; ventas realizadas por terceros)", cantidad: "500", codigo: "501", signo: "+"}
+      - {n: 18, glosa: "Liquidación y Liquidación Factura emitidas (resta débito; ventas por cuenta de terceros)", cantidad: "817", codigo: "818", signo: "-"}
+      - {n: 19, glosa: "Adicionales al débito fiscal del mes por devoluciones excesivas de otros períodos (Art. 27 bis)", codigo: "154", signo: "+"}
+      - {n: 20, glosa: "Restitución adicional por proporción de operaciones exentas o no gravadas (Art. 27 bis inc. 2°)", codigo: "518", signo: "+"}
+      - {n: 21, glosa: "Reintegro de Impuesto de Timbres y Estampillas e IVA por arrendamiento esporádico de inmuebles amoblados", codigo: "713", signo: "+"}
+      - {n: 22, glosa: "Adiciones al débito por IEPD, Ley 20.765", codigo: "741", signo: "+",
+         extra: [{etiqueta: "M3", codigo: "738"}, {etiqueta: "Base", codigo: "739"}, {etiqueta: "Variable", codigo: "740"}]}
+      - {n: 23, glosa: "Restitución adicional por reembolso de remanente de CF IVA (Ley 21.256)", codigo: "791", signo: "+"}
+      - {n: 24, glosa: "TOTAL DÉBITOS", codigo: "538", signo: "=", total: true}
+
+  # ===================== CRÉDITOS Y COMPRAS =====================
+  - titulo: "CRÉDITOS Y COMPRAS"
+    subtitulo: "Compras y/o servicios utilizados"
+    columnas: ["Con derecho a crédito", "Sin derecho a crédito"]
+    lineas:
+      - {n: 25, glosa: "IVA por documentos electrónicos recibidos", cantidad: "511", codigo: "514"}
+
+  - titulo: "CRÉDITOS Y COMPRAS"
+    subtitulo: "Sin derecho a crédito fiscal"
+    columnas: ["Cantidad de documentos", "Monto neto"]
+    lineas:
+      - {n: 26, glosa: "Internas afectas", cantidad: "564", codigo: "521"}
+      - {n: 27, glosa: "Importaciones", cantidad: "566", codigo: "560"}
+      - {n: 28, glosa: "Internas exentas o no gravadas", cantidad: "584", codigo: "562"}
+
+  - titulo: "CRÉDITOS Y COMPRAS"
+    subtitulo: "Con derecho a crédito fiscal · Internas"
+    columnas: ["Cantidad de documentos", "Crédito, recuperación y reintegro"]
+    lineas:
+      - {n: 29, glosa: "Facturas recibidas del giro, facturas de compra emitidas y comisión por recepción de liquidación factura", cantidad: "519", codigo: "520", signo: "+"}
+      - {n: 30, glosa: "Facturas recibidas de supermercados y comercios similares (Art. 23 N°4 D.L. 825)", cantidad: "761", codigo: "762", signo: "+"}
+      - {n: 31, glosa: "Facturas por adquisición o construcción de bienes inmuebles (Art. 8° transitorio Ley 20.780)", cantidad: "765", codigo: "766", signo: "+"}
+      - {n: 32, glosa: "Facturas activo fijo", cantidad: "524", codigo: "525", signo: "+"}
+      - {n: 33, glosa: "Notas de crédito recibidas y emitidas por retención de cambio de sujeto", cantidad: "527", codigo: "528", signo: "-"}
+      - {n: 34, glosa: "Notas de débito recibidas y emitidas por retención de cambio de sujeto", cantidad: "531", codigo: "532", signo: "+"}
+
+  - titulo: "CRÉDITOS Y COMPRAS"
+    subtitulo: "Con derecho a crédito fiscal · Importaciones y remanentes"
+    columnas: ["Cantidad de documentos", "Crédito, recuperación y reintegro"]
+    lineas:
+      - {n: 35, glosa: "Declaraciones de Ingreso (DIN) importaciones del giro", cantidad: "534", codigo: "535", signo: "+"}
+      - {n: 36, glosa: "Declaraciones de Ingreso (DIN) importaciones activo fijo", cantidad: "536", codigo: "553", signo: "+"}
+      - {n: 37, glosa: "Remanente crédito fiscal mes anterior", codigo: "504", signo: "+"}
+      - {n: 38, glosa: "Devolución solicitud Art. 36 (exportadores)", codigo: "593", signo: "-"}
+      - {n: 39, glosa: "Devolución solicitud Art. 27 bis (activo fijo)", codigo: "594", signo: "-"}
+      - {n: 40, glosa: "Certificado imputación Art. 27 bis (activo fijo)", codigo: "592", signo: "-"}
+      - {n: 41, glosa: "Devolución solicitud Art. 3 (cambio de sujeto)", codigo: "539", signo: "-"}
+      - {n: 42, glosa: "Devolución solicitud Ley 20.258, remanente CF IVA por IEPD (generadoras eléctricas)", codigo: "718", signo: "-"}
+      - {n: 43, glosa: "Devolución solicitud reembolso remanente de crédito fiscal IVA", codigo: "790", signo: "-"}
+      - {n: 44, glosa: "Monto reintegrado por devolución indebida de crédito fiscal D.S. 348 (exportadores)", codigo: "164", signo: "+"}
+
+  - titulo: "CRÉDITOS Y COMPRAS"
+    subtitulo: "Ley 20.765 y otros créditos"
+    columnas: ["M3 con derecho a crédito", "Crédito, recuperación y reintegro"]
+    lineas:
+      - {n: 45, glosa: "Recuperación de Impuesto Específico al Petróleo Diésel (Art. 7° Ley 18.502)", cantidad: "730", codigo: "127", signo: "+",
+         extra: [{etiqueta: "Base", codigo: "742"}, {etiqueta: "Variable", codigo: "743"}]}
+      - {n: 46, glosa: "Recuperación IEPD soportado por transportistas de carga (Art. 2° Ley 19.764)", cantidad: "729", codigo: "544", signo: "+",
+         extra: [{etiqueta: "Base", codigo: "744"}, {etiqueta: "Variable", codigo: "745"}]}
+      - {n: 47, glosa: "Crédito del Art. 11 Ley 18.211 (Zona Franca de Extensión)", codigo: "523", signo: "+"}
+      - {n: 48, glosa: "Crédito por Impuesto de Timbres y Estampillas (Art. 3° Ley 20.259)", codigo: "712", signo: "+"}
+      - {n: 49, glosa: "Crédito por IVA restituido a aportantes sin domicilio ni residencia en Chile (Ley 20.712)", codigo: "757", signo: "+"}
+      - {n: 50, glosa: "TOTAL CRÉDITOS", codigo: "537", signo: "=", total: true}
+
+  # ===================== DETERMINACIÓN =====================
+  - titulo: "POSTERGACIÓN DE IVA"
+    subtitulo: "Ley 20.780"
+    columnas: ["", "Impuesto determinado"]
+    lineas:
+      - {n: 51, glosa: "Remanente de crédito fiscal para el período siguiente", codigo: "77", destacar: true}
+      - {n: 51, glosa: "IVA determinado", codigo: "89", signo: "+", destacar: true,
+         extra: [{etiqueta: "Postergación pago del IVA", codigo: "756"}, {etiqueta: "", codigo: "755"}]}
+      - {n: 58, glosa: "Restitución de devolución por Art. 27 ter D.L. 825 inc. 2° (Ley 20.720)", codigo: "760", signo: "+"}
+      - {n: 59, glosa: "Certificado imputación Art. 27 ter D.L. 825 inc. 1° (Ley 20.720)", codigo: "767", signo: "+"}
+
+  # ===================== RENTA =====================
+  - titulo: "IMPUESTO A LA RENTA D.L. 824/74"
+    subtitulo: "Retenciones"
+    columnas: ["", "Impuesto determinado"]
+    lineas:
+      - {n: 60, glosa: "Retención Impuesto Primera Categoría por rentas de capitales mobiliarios (Art. 20 N°2, según Art. 73 LIR)", codigo: "50", signo: "+"}
+      - {n: 61, glosa: "Retención Impuesto Único a los Trabajadores (Art. 74 N°1 LIR)", codigo: "48", signo: "+",
+         extra: [{etiqueta: "Créditos", codigo: "751"}, {etiqueta: "Donación Ley 18.985", codigo: "735"}]}
+      - {n: 62, glosa: "Retención con tasa 10% sobre rentas del Art. 42 N°2 (Art. 74 N°2 LIR)", codigo: "151", signo: "+"}
+      - {n: 63, glosa: "Retención con tasa 10% sobre rentas del Art. 48 (Art. 74 N°3 LIR)", codigo: "153", signo: "+"}
+      - {n: 64, glosa: "Retención sobre rentas del Art. 42 N°1 con tasa 3%, por reintegro de préstamo tasa 0%", codigo: "49", signo: "+"}
+      - {n: 65, glosa: "Retención sobre rentas del Art. 42 N°2 con tasa 3%, por reintegro de préstamo tasa 0%", codigo: "155", signo: "+"}
+      - {n: 66, glosa: "Retención a suplementeros (Art. 74 N°5, tasa 0,5%)", codigo: "54", signo: "+"}
+      - {n: 67, glosa: "Retención por compra de productos mineros (Art. 74 N°6 LIR)", codigo: "56", signo: "+"}
+      - {n: 68, glosa: "Retención sobre seguros dotales y de vida con ahorro (Art. 17 N°3, tasa 15%)", codigo: "588", signo: "+"}
+      - {n: 69, glosa: "Retención sobre retiros de Ahorro Previsional Voluntario (Art. 42 bis, tasa 15%)", codigo: "589", signo: "+"}
+
+  - titulo: "IMPUESTO A LA RENTA D.L. 824/74"
+    subtitulo: "Pagos provisionales mensuales"
+    columnas: ["", "PPM determinado"]
+    lineas:
+      - {n: 70, glosa: "1ª Categoría (Art. 84 a) y 14 D N°3 letra k) y N°8 letra a) numeral viii)", codigo: "62", signo: "+",
+         extra: [{etiqueta: "Acogido a suspensión", codigo: "750"},
+                 {etiqueta: "Monto pérdida Art. 90", codigo: "30"},
+                 {etiqueta: "Base imponible", codigo: "563"},
+                 {etiqueta: "Tasa", codigo: "115"},
+                 {etiqueta: "Crédito / tope suspensión", codigo: "68"}]}
+      - {n: 71, glosa: "1ª Categoría con tasa 3%, por reintegro de préstamo tasa 0%", codigo: "156", signo: "+"}
+      - {n: 72, glosa: "Mineros Art. 84 a)", codigo: "123", signo: "+"}
+      - {n: 73, glosa: "Explotador minero Art. 84 h)", codigo: "703", signo: "+"}
+      - {n: 74, glosa: "Explotador minero Royalty Ley 21.591", codigo: "810", signo: "+"}
+      - {n: 75, glosa: "Transportistas acogidos a renta presunta (Art. 84 e) y f), tasa 0,3%)", codigo: "66", signo: "+"}
+      - {n: 76, glosa: "Crédito capacitación, Ley 19.518/97", codigo: "723", signo: "-",
+         extra: [{etiqueta: "Crédito del mes", codigo: "721"}, {etiqueta: "Remanente mes anterior", codigo: "724"}]}
+      - {n: 77, glosa: "2ª Categoría (Art. 84 b), tasa 10%)", codigo: "152", signo: "+"}
+      - {n: 78, glosa: "2ª Categoría con tasa 3%, por reintegro de préstamo tasa 0%", codigo: "157", signo: "+"}
+      - {n: 79, glosa: "Taller artesanal (Art. 84 c), tasa 1,5% o 3%)", codigo: "70", signo: "+"}
+      - {n: 80, glosa: "Renta líquida provisional (Art. 84 letra a) inciso final, Ley 21.210)", codigo: "776"}
+      - {n: 81, glosa: "SUBTOTAL IMPUESTO DETERMINADO ANVERSO", codigo: "595", signo: "=", total: true}
+
+  # ===================== RESULTADO =====================
+  - titulo: "CRÉDITOS ESPECIALES"
+    columnas: ["", "Total crédito"]
+    lineas:
+      - {n: 135, glosa: "Crédito por sistemas solares térmicos, Ley 20.365", codigo: "727", signo: "-"}
+      - {n: 136, glosa: "Imputación del pago patente aguas, Ley 20.017/05", codigo: "706", signo: "-"}
+      - {n: 137, glosa: "Cotización adicional Ley 18.566/86", codigo: "570", signo: "-"}
+      - {n: 138, glosa: "Crédito especial empresas constructoras (Art. 21 D.L. 910/75)", codigo: "571", signo: "-"}
+      - {n: 139, glosa: "Recuperación de peajes transportistas de pasajeros, Ley 19.764/01", codigo: "590", signo: "-"}
+      - {n: 140, glosa: "Crédito por desembolsos directos de trazabilidad", codigo: "770", signo: "-"}
+      - {n: 141, glosa: "TOTAL DETERMINADO", codigo: "547", signo: "=", total: true}
+
+  - titulo: "RESULTADO"
+    columnas: ["", "A pagar"]
+    lineas:
+      - {n: 148, glosa: "TOTAL A PAGAR DENTRO DEL PLAZO LEGAL", codigo: "91", signo: "=", total: true, destacar: true}
+      - {n: 149, glosa: "Más IPC", codigo: "92", signo: "+"}
+      - {n: 150, glosa: "Más intereses y multas", codigo: "93", signo: "+"}
+      - {n: 151, glosa: "TOTAL A PAGAR CON RECARGO", codigo: "94", signo: "=", total: true, destacar: true}

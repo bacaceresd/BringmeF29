@@ -260,6 +260,9 @@ class AvisoPago:
     imagen: str = ""
     captura_sii: str = ""
     comprobante_sii: str = ""
+    formulario_pdf: str = ""
+    formulario_completo_pdf: str = ""
+    formulario_excel: str = ""
     enviado_correo: bool = False
     enviado_whatsapp: bool = False
     enlace_whatsapp: str = ""

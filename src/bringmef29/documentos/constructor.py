@@ -15,9 +15,11 @@ from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
+from .. import formulario as armador_formulario
 from .. import resumen as armador_resumen
 from ..calendario import fecha_con_dia_semana
 from ..config import Config
+from .. import cuadratura
 from ..modelos import Contribuyente, DeclaracionF29
 from ..sii.f29_navegador import ruta_chromium
 from .formato import fecha_larga
@@ -33,9 +35,25 @@ class ErrorRender(RuntimeError):
 
 @dataclass
 class Documentos:
-    pdf: str = ""
-    imagen: str = ""
+    """Rutas de lo generado. El resumen va por WhatsApp; el formulario, por correo."""
+
+    pdf: str = ""                  # resumen, A4
+    imagen: str = ""               # resumen, PNG para WhatsApp
     html: str = ""
+    formulario_pdf: str = ""       # F29 por secciones, sólo líneas con valor
+    formulario_completo_pdf: str = ""
+    formulario_excel: str = ""
+
+    @property
+    def para_correo(self) -> list[str]:
+        """Lo formal: el formulario y, si se generó, su versión completa."""
+        return [p for p in (self.formulario_pdf, self.formulario_completo_pdf,
+                            self.formulario_excel, self.pdf) if p]
+
+    @property
+    def para_whatsapp(self) -> list[str]:
+        """Lo informal: la imagen del resumen."""
+        return [p for p in (self.imagen,) if p]
 
 
 class ConstructorDocumentos:
@@ -85,6 +103,87 @@ class ConstructorDocumentos:
             documentos.pdf = self._a_pdf(pagina, html_aviso, carpeta / f"{base}.pdf")
             documentos.imagen = self._a_png(pagina, html_imagen, carpeta / f"{base}.png")
         return documentos
+
+    # -- formulario F29 -----------------------------------------------------
+    def construir_formulario(
+        self,
+        declaracion: DeclaracionF29,
+        contribuyente: Contribuyente,
+        *,
+        destino: Path | None = None,
+        compacto: bool = True,
+        completo: bool = False,
+        excel: bool = False,
+        guardar_html: bool = False,
+    ) -> Documentos:
+        """Genera el F29 por secciones en los formatos pedidos."""
+        carpeta = Path(
+            destino
+            or self.config.directorio_salida / declaracion.rut.sin_formato / declaracion.periodo.codigo
+        )
+        carpeta.mkdir(parents=True, exist_ok=True)
+        base = f"F29-{declaracion.periodo.codigo}-{declaracion.rut.sin_formato}"
+        documentos = Documentos()
+
+        plantilla = self.entorno.get_template("formulario.html.j2")
+        paginas: list[tuple[str, Path]] = []
+
+        if compacto:
+            html = plantilla.render(
+                **self._contexto_formulario(declaracion, contribuyente, completo=False)
+            )
+            paginas.append((html, carpeta / f"{base}-formulario.pdf"))
+            if guardar_html:
+                (carpeta / f"{base}-formulario.html").write_text(html, encoding="utf-8")
+        if completo:
+            html = plantilla.render(
+                **self._contexto_formulario(declaracion, contribuyente, completo=True)
+            )
+            paginas.append((html, carpeta / f"{base}-formulario-completo.pdf"))
+
+        if paginas:
+            with _pagina_chromium(self.config.sii.ruta_chromium) as pagina:
+                for html, ruta in paginas:
+                    self._a_pdf(pagina, html, ruta)
+            if compacto:
+                documentos.formulario_pdf = str(paginas[0][1])
+            if completo:
+                documentos.formulario_completo_pdf = str(paginas[-1][1])
+
+        if excel:
+            from .excel import exportar
+
+            documentos.formulario_excel = exportar(
+                armador_formulario.construir(declaracion, completo=True),
+                carpeta / f"{base}-formulario.xlsx",
+                estudio=self.config.estudio.nombre,
+                vencimiento=fecha_con_dia_semana(self._vencimiento(declaracion, contribuyente)),
+            )
+        return documentos
+
+    def _contexto_formulario(
+        self, declaracion: DeclaracionF29, contribuyente: Contribuyente, *, completo: bool
+    ) -> dict:
+        vence = self._vencimiento(declaracion, contribuyente)
+        return {
+            "estudio": self.config.estudio,
+            "periodo": declaracion.periodo,
+            "rut": declaracion.rut.formateado,
+            "razon_social": (contribuyente.razon_social or declaracion.razon_social
+                             or contribuyente.alias),
+            "folio": declaracion.folio,
+            "procedencia_glosa": declaracion.procedencia_glosa,
+            "es_propuesta_del_sii": declaracion.es_propuesta_del_sii,
+            "formulario": armador_formulario.construir(declaracion, completo=completo),
+            "monto": armador_formulario.monto,
+            "monto_a_pagar": declaracion.monto_a_pagar,
+            "hay_que_pagar": declaracion.hay_que_pagar,
+            "vencimiento_texto": f"{fecha_con_dia_semana(vence)}, 23:59 hrs",
+            "descuadres": [str(d) for d in cuadratura.verificar(declaracion)],
+            "emitido": fecha_larga(date.today()),
+            "css": (DIR_RECURSOS / "formulario.css").read_text(encoding="utf-8"),
+            "logo_uri": _a_data_uri(self.config.estudio.logo),
+        }
 
     # -- contexto de plantilla ---------------------------------------------
     def _contexto(

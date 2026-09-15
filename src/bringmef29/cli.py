@@ -48,7 +48,8 @@ def construir_parser() -> argparse.ArgumentParser:
     # -- comandos que consultan el SII --------------------------------------
     for nombre, ayuda in (
         ("traer", "Consulta el F29 en el SII y muestra el resumen."),
-        ("documentos", "Consulta el F29 y genera el PDF y la imagen, sin enviar nada."),
+        ("documentos", "Consulta el F29 y genera los documentos, sin enviar nada."),
+        ("formulario", "Genera el F29 por secciones: PDF compacto, completo y Excel."),
         ("enviar", "Flujo completo: consulta, genera documentos y despacha el aviso."),
     ):
         p = sub.add_parser(nombre, help=ayuda, description=ayuda)
@@ -57,6 +58,16 @@ def construir_parser() -> argparse.ArgumentParser:
         _opciones_sii(p)
         if nombre != "traer":
             p.add_argument("--html", action="store_true", help="Guarda también el HTML del aviso.")
+            p.add_argument(
+                "--exportar",
+                metavar="FORMATOS",
+                default="compacto",
+                help=(
+                    "Qué formularios generar, separados por coma: 'compacto' (sólo las "
+                    "líneas con valor), 'completo' (todas), 'excel', o 'todo'. "
+                    "Usa 'ninguno' para omitir el formulario."
+                ),
+            )
         if nombre == "enviar":
             p.add_argument("--solo-correo", action="store_true", help="No envía por WhatsApp.")
             p.add_argument("--solo-whatsapp", action="store_true", help="No envía por correo.")
@@ -85,6 +96,10 @@ def construir_parser() -> argparse.ArgumentParser:
     _opciones_sii(p_lote)
     p_lote.add_argument("--clientes", help="Lista de alias separados por coma (por defecto: todos).")
     p_lote.add_argument("--simular", action="store_true", help="No despacha nada.")
+    p_lote.add_argument(
+        "--exportar", metavar="FORMATOS", default="compacto",
+        help="Qué formularios generar: compacto, completo, excel, todo o ninguno.",
+    )
     p_lote.add_argument(
         "--sin-envio", action="store_true", help="Sólo genera los documentos de cada cliente."
     )
@@ -218,6 +233,26 @@ def _despachar(args: argparse.Namespace) -> int:
 # -- comandos ---------------------------------------------------------------
 
 
+FORMATOS = ("compacto", "completo", "excel")
+
+
+def _resolver_exportar(valor: str | None) -> tuple[str, ...]:
+    """Convierte ``--exportar todo`` o ``compacto,excel`` en una tupla de formatos."""
+    texto = (valor or "compacto").strip().lower()
+    if texto in ("ninguno", "no", ""):
+        return ()
+    if texto == "todo":
+        return FORMATOS
+    pedidos = tuple(p.strip() for p in texto.split(",") if p.strip())
+    desconocidos = [p for p in pedidos if p not in FORMATOS]
+    if desconocidos:
+        raise ErrorConfig(
+            f"Formato de exportación desconocido: {', '.join(desconocidos)}. "
+            f"Usa {', '.join(FORMATOS)}, 'todo' o 'ninguno'."
+        )
+    return pedidos
+
+
 def _comando_cliente(config: Config, args: argparse.Namespace) -> int:
     from . import flujo
 
@@ -242,6 +277,23 @@ def _comando_cliente(config: Config, args: argparse.Namespace) -> int:
             print(f"  PDF oficial SII : {resultado.pdf_oficial}")
         return 0
 
+    if args.comando == "formulario":
+        exportar = _resolver_exportar(args.exportar) or ("compacto",)
+        aviso = flujo.procesar(
+            config,
+            args.cliente,
+            periodo,
+            fuente=args.fuente or "",
+            modo=args.modo or "",
+            headless=headless,
+            permitir_propuesta=args.permitir_propuesta,
+            solo_documentos=True,
+            guardar_html=args.html,
+            exportar=exportar,
+        )
+        _imprimir_aviso(aviso)
+        return 1 if aviso.incidencias else 0
+
     aviso = flujo.procesar(
         config,
         args.cliente,
@@ -257,6 +309,7 @@ def _comando_cliente(config: Config, args: argparse.Namespace) -> int:
         destinatarios=getattr(args, "para", None),
         guardar_html=getattr(args, "html", False),
         desde_archivo=getattr(args, "desde_archivo", "") or "",
+        exportar=_resolver_exportar(getattr(args, "exportar", "compacto")),
     )
     _imprimir_aviso(aviso, simulado=getattr(args, "simular", False))
     return 1 if aviso.incidencias else 0
@@ -290,6 +343,7 @@ def _comando_lote(config: Config, args: argparse.Namespace) -> int:
                 permitir_propuesta=args.permitir_propuesta,
                 solo_documentos=args.sin_envio,
                 simular_envio=args.simular,
+                exportar=_resolver_exportar(getattr(args, "exportar", "compacto")),
             )
             _imprimir_aviso(aviso, simulado=args.simular)
             if aviso.incidencias:
@@ -463,6 +517,12 @@ def _imprimir_aviso(aviso: AvisoPago, *, simulado: bool = False) -> None:
         print(f"  Imagen  : {aviso.imagen}")
     if aviso.comprobante_sii:
         print(f"  SII PDF : {aviso.comprobante_sii}")
+    if aviso.formulario_pdf:
+        print(f"  F29     : {aviso.formulario_pdf}")
+    if aviso.formulario_completo_pdf:
+        print(f"  F29 full: {aviso.formulario_completo_pdf}")
+    if aviso.formulario_excel:
+        print(f"  Excel   : {aviso.formulario_excel}")
     if simulado:
         print("\n  (simulación: no se envió nada)")
     else:

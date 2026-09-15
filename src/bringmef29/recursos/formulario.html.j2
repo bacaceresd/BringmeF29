@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>F29 {{ periodo.etiqueta }} — {{ razon_social }}</title>
+<style>{{ css | safe }}</style>
+</head>
+<body>
+<div class="hoja">
+
+  <header class="cabecera">
+    <div class="marca">
+      {% if logo_uri %}<img class="logo" src="{{ logo_uri }}" alt="{{ estudio.nombre }}">
+      {% else %}<div class="estudio">{{ estudio.nombre }}</div>{% endif %}
+    </div>
+    <div class="titulo-doc">
+      <div class="f29">Formulario 29</div>
+      <div class="periodo">{{ periodo.etiqueta }}</div>
+    </div>
+  </header>
+
+  <section class="identificacion">
+    <div><span class="k">Contribuyente</span><span class="v">{{ razon_social }}</span></div>
+    <div><span class="k">RUT</span><span class="v">{{ rut }}</span></div>
+    <div><span class="k">Período tributario</span><span class="v">{{ periodo.codigo }}</span></div>
+    <div><span class="k">Folio</span><span class="v">{{ folio or "—" }}</span></div>
+    <div class="ancho"><span class="k">Formulario</span><span class="v">{{ procedencia_glosa }}</span></div>
+  </section>
+
+  {% if es_propuesta_del_sii %}
+  <p class="advertencia">
+    <strong>Atención:</strong> las cifras vienen de la propuesta del SII, no de la
+    declaración del contribuyente.
+  </p>
+  {% endif %}
+
+  {% for seccion in formulario.secciones %}
+  <section class="seccion">
+    <div class="seccion-titulo">
+      <span class="t">{{ seccion.titulo }}</span>
+      {% if seccion.subtitulo %}<span class="s">{{ seccion.subtitulo }}</span>{% endif %}
+    </div>
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th class="ln">Línea</th>
+          <th class="gl">Concepto</th>
+          <th class="ct">{{ seccion.columnas[0] if seccion.columnas else "" }}</th>
+          <th class="mt">{{ seccion.columnas[1] if seccion.columnas|length > 1 else "Monto" }}</th>
+          <th class="sg"></th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for linea in seccion.lineas %}
+        <tr class="{{ 'total' if linea.total }}{{ ' destacar' if linea.destacar }}{{ ' vacia' if not linea.tiene_valor }}">
+          <td class="ln">{{ linea.numero }}</td>
+          <td class="gl">
+            {{ linea.glosa }}
+            {% if linea.extra %}
+            <span class="extra">
+              {% for casilla in linea.extra %}{% if casilla.tiene_valor or formulario.completo %}
+              <span class="ex"><i>{{ casilla.etiqueta }}</i><b>{{ casilla.codigo }}</b>{{ monto(casilla.valor) }}</span>
+              {% endif %}{% endfor %}
+            </span>
+            {% endif %}
+          </td>
+          <td class="ct">
+            {% if linea.cantidad %}<span class="cod">{{ linea.cantidad.codigo }}</span>{{ monto(linea.cantidad.valor) }}{% endif %}
+          </td>
+          <td class="mt">
+            {% if linea.monto %}<span class="cod">{{ linea.monto.codigo }}</span>{{ monto(linea.monto.valor) }}{% endif %}
+          </td>
+          <td class="sg">{{ linea.signo }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </section>
+  {% endfor %}
+
+  <section class="cierre {{ 'sin-pago' if not hay_que_pagar }}">
+    <div class="cierre-glosa">
+      {% if hay_que_pagar %}Total a pagar{% else %}Sin pago asociado{% endif %}
+    </div>
+    <div class="cierre-monto">{{ monto(monto_a_pagar) }}</div>
+  </section>
+  {% if hay_que_pagar %}
+  <p class="vencimiento">Vence el <strong>{{ vencimiento_texto }}</strong></p>
+  {% endif %}
+
+  {% if descuadres %}
+  <div class="descuadre">
+    <strong>Revisa estas cifras:</strong>
+    <ul>{% for d in descuadres %}<li>{{ d }}</li>{% endfor %}</ul>
+  </div>
+  {% endif %}
+
+  <footer class="pie">
+    <span>{{ estudio.nombre }}{% if estudio.correo %} · {{ estudio.correo }}{% endif %}</span>
+    <span>{% if formulario.completo %}Formulario completo{% else %}{{ formulario.lineas_con_valor }} líneas con valor{% endif %} · Emitido {{ emitido }}</span>
+  </footer>
+
+</div>
+</body>
+</html>

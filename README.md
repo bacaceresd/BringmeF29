@@ -41,6 +41,31 @@ logs y no sale del equipo. Desde ahí se descargan el PDF y la imagen.
 Si prefieres la terminal, todo lo que hace la pantalla está también en los comandos
 de más abajo.
 
+## Dos documentos, dos canales
+
+| | Qué es | Va por |
+|---|---|---|
+| **Resumen** | La tabla corta: IVA, Retenciones, PPM y total. Se lee de una pasada. | WhatsApp — informal, primera mirada |
+| **Formulario 29** | El F29 por secciones, con número de línea, código y glosa oficial. | Correo — formal |
+
+```bash
+bringmef29 formulario cliente-1 -p 2026-08 --exportar todo
+```
+
+Genera tres archivos:
+
+| Archivo | Qué trae |
+|---|---|
+| `…-formulario.pdf` | **Compacto**: sólo las líneas con valor. Un F29 típico usa 15 o 20 de las 87. |
+| `…-formulario-completo.pdf` | **Completo**: todas las líneas, con las casillas vacías, para cotejar contra el SII línea por línea. |
+| `…-formulario.xlsx` | El formulario completo en Excel, con el mismo aspecto. Los montos van como número, no como texto, así que se pegan y se suman. |
+
+`--exportar` acepta `compacto`, `completo`, `excel`, `todo` o `ninguno`, separados
+por coma. `bringmef29 enviar` genera el compacto por defecto y lo adjunta al correo.
+
+Cada sección del formulario se dibuja como **su propia tabla, separada de la
+siguiente** — igual que en el borrador del SII, no como una sola parrilla continua.
+
 ## Qué genera
 
 El aviso es una tabla y nada más, agrupada como la escribe un contador:
@@ -78,8 +103,11 @@ Por cada cliente y período, en `salida/<rut>/<aaaamm>/`:
 
 | Archivo | Para qué sirve |
 |---|---|
-| `F29-<periodo>-<rut>.pdf` | El aviso de pago. Va adjunto al correo. |
-| `F29-<periodo>-<rut>.png` | La misma tabla como imagen, para WhatsApp. |
+| `F29-<periodo>-<rut>.pdf` | El resumen en A4. |
+| `F29-<periodo>-<rut>.png` | El resumen como imagen, para WhatsApp. |
+| `F29-<periodo>-<rut>-formulario.pdf` | El F29 por secciones, sólo líneas con valor. Va por correo. |
+| `F29-<periodo>-<rut>-formulario-completo.pdf` | El F29 con todas sus líneas. |
+| `F29-<periodo>-<rut>-formulario.xlsx` | El formulario completo en Excel. |
 | `comprobante-sii.png` | Captura de la pantalla del SII (sólo en modo navegador). Se incrusta en el PDF. |
 | `f29-sii.pdf` | El PDF oficial del SII, cuando la pantalla ofrece la descarga. |
 | `declaracion.json` | Los códigos leídos, para auditoría y para reimprimir sin volver al SII. |
@@ -161,6 +189,9 @@ bringmef29 traer acme --periodo 2025-08
 
 # Generar el PDF y la imagen, sin enviar nada
 bringmef29 documentos acme -p 2025-08
+
+# El F29 por secciones: compacto, completo y Excel
+bringmef29 formulario acme -p 2025-08 --exportar todo
 
 # Flujo completo, pero mostrando qué se enviaría
 bringmef29 enviar acme -p 2025-08 --simular
@@ -332,8 +363,10 @@ Tres cosas que este catálogo dejó en claro, y que estaban mal antes:
   **`520`**.
 - **`527` es la cantidad** de notas de crédito recibidas; el monto es el **`528`**,
   y **resta** del crédito.
-- **La pérdida del art. 90** que suspende los PPM es el **`30`**, y las
-  **liquidaciones factura** son el **`501`**.
+- **La pérdida del art. 90** que suspende los PPM es el **`30`**.
+- Las **liquidaciones factura** son dos líneas distintas: las **recibidas** (`501`,
+  línea 17) **suman** al débito y las **emitidas** (`818`, línea 18) lo **restan**.
+  Es la que anula el débito de las ventas por cuenta de terceros.
 
 ## Que cuadre
 
@@ -342,8 +375,8 @@ trajo del SII:
 
 | Identidad | Fuente |
 |---|---|
-| `538` = suma de las líneas 7 a 22 | Instrucciones, línea 23 |
-| `537` = suma de las líneas 28 a 48 | Instrucciones, línea 49 |
+| `538` = suma de las líneas 7 a 23 | Formulario, línea 24 |
+| `537` = suma de las líneas 29 a 49 | Formulario, línea 50 |
 | `89` = `538` − `537`, cuando es positivo | Anverso, línea 50 |
 | `77` = `537` − `538`, cuando es positivo | Anverso, línea 50 |
 | `94` = `91` + `92` + `93` | Anverso, total con recargo |
@@ -361,8 +394,10 @@ el contribuyente declaró mal. Es la señal de que el resultado todavía no calz
 lo que dejaste guardado en el SII, y hay que mirarlo antes de mandarle nada al
 cliente.
 
-Las identidades están en el mismo `codigos_f29.yml`, al final, y el verificador en
-`src/bringmef29/cuadratura.py`.
+Las identidades están al final de `codigos_f29.yml`, y el verificador en
+`src/bringmef29/cuadratura.py`. Las sumas recorren `formulario_f29.yml`, que es la
+numeración de líneas vigente del borrador del SII — por eso el `818` (liquidaciones
+factura emitidas) resta del débito, como corresponde.
 
 ## Cómo se arma el resumen
 
@@ -425,7 +460,7 @@ clave, y no correr esto en un equipo compartido.
 
 ```bash
 pip install -e ".[dev]"
-pytest              # 233 pruebas
+pytest              # 253 pruebas
 pytest -k documentos   # sólo el armado del PDF y la imagen
 ```
 
@@ -440,7 +475,8 @@ src/bringmef29/
 ├── cli.py             Interfaz de línea de comandos
 ├── web.py             Pantalla local de RUT y clave tributaria
 ├── flujo.py           Orquestador: del SII al aviso enviado
-├── resumen.py         Arma la tabla: IVA, Retenciones, PPM y total
+├── resumen.py         Arma la tabla corta que va por WhatsApp
+├── formulario.py      Arma el F29 por secciones que va por correo
 ├── cuadratura.py      Catálogo de códigos y verificación de identidades
 ├── calendario.py      Feriados chilenos y vencimiento del F29
 ├── config.py          Configuración, clientes y resolución de secretos
@@ -454,6 +490,7 @@ src/bringmef29/
 │   └── f29_navegador.py Consulta manejando el sitio con Chromium
 ├── documentos/
 │   ├── constructor.py   HTML → PDF y HTML → PNG
+│   ├── excel.py         El formulario completo en XLSX
 │   └── formato.py       Pesos y fechas en convención chilena
 ├── envio/
 │   ├── correo.py        SMTP con adjuntos
@@ -461,8 +498,11 @@ src/bringmef29/
 └── recursos/
     ├── aviso.html.j2    Plantilla del PDF y de la imagen
     ├── aviso.css        Estilos del aviso
-    ├── codigos_f29.yml  Los 215 códigos del formulario, su línea y su efecto
-    └── resumen_f29.yml  Qué líneas lleva el resumen y de qué código sale cada una
+    ├── formulario.html.j2  Plantilla del F29 por secciones
+    ├── formulario.css      Estilos del F29
+    ├── codigos_f29.yml     Los códigos del formulario, su línea y su efecto
+    ├── formulario_f29.yml  Las secciones y líneas del F29, del borrador del SII
+    └── resumen_f29.yml     Qué líneas lleva el resumen corto
 ```
 
 Para cambiar el diseño del aviso: `aviso.html.j2` y `aviso.css`. Genera con

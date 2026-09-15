@@ -191,6 +191,7 @@ def procesar(
     destinatarios: list[str] | None = None,
     guardar_html: bool = False,
     desde_archivo: str = "",
+    exportar: tuple[str, ...] = ("compacto",),
 ) -> AvisoPago:
     """Ejecuta el flujo completo para un cliente y período."""
     contribuyente = config.cliente(referencia_cliente)
@@ -213,9 +214,25 @@ def procesar(
     # contribuyente y no la propuesta del SII.
     verificar_procedencia(declaracion, permitir_propuesta=permitir_propuesta)
 
-    documentos = ConstructorDocumentos(config).construir(
+    constructor = ConstructorDocumentos(config)
+    documentos = constructor.construir(
         declaracion, contribuyente, captura_sii=captura, guardar_html=guardar_html
     )
+
+    # El formulario es la versión formal del período: va por correo. El resumen
+    # corto es el que se manda por WhatsApp.
+    if exportar:
+        del_formulario = constructor.construir_formulario(
+            declaracion,
+            contribuyente,
+            compacto="compacto" in exportar,
+            completo="completo" in exportar,
+            excel="excel" in exportar,
+            guardar_html=guardar_html,
+        )
+        documentos.formulario_pdf = del_formulario.formulario_pdf
+        documentos.formulario_completo_pdf = del_formulario.formulario_completo_pdf
+        documentos.formulario_excel = del_formulario.formulario_excel
 
     aviso = AvisoPago(
         declaracion=declaracion,
@@ -224,18 +241,23 @@ def procesar(
         imagen=documentos.imagen,
         captura_sii=captura,
         comprobante_sii=pdf_oficial,
+        formulario_pdf=documentos.formulario_pdf,
+        formulario_completo_pdf=documentos.formulario_completo_pdf,
+        formulario_excel=documentos.formulario_excel,
     )
     if solo_documentos:
         return aviso
 
-    adjuntos = [p for p in (documentos.pdf, documentos.imagen, pdf_oficial) if p]
+    # Correo: lo formal — el formulario por secciones, más el resumen y el
+    # comprobante del SII. WhatsApp: sólo la imagen del resumen.
+    adjuntos_correo = [p for p in (*documentos.para_correo, pdf_oficial) if p]
 
     if enviar_correo:
         try:
             EnviadorCorreo(config).enviar(
                 declaracion,
                 contribuyente,
-                adjuntos,
+                adjuntos_correo,
                 destinatarios=destinatarios,
                 simular=simular_envio,
             )

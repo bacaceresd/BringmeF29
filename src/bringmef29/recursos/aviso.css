@@ -1,0 +1,137 @@
+:root {
+  --tinta: #10233a;
+  --tinta-suave: #5b6b7f;
+  --linea: #dde4ec;
+  --fondo-suave: #f4f7fb;
+  --acento: #0b5fa5;
+  --acento-fondo: #e8f1fa;
+  --alerta: #8a5100;
+  --alerta-fondo: #fdf3e3;
+  --ok: #1f6b46;
+  --ok-fondo: #e9f5ee;
+}
+
+* { box-sizing: border-box; }
+
+@page {
+  size: A4;
+  margin: 14mm 13mm;
+}
+
+body {
+  margin: 0;
+  font-family: "Helvetica Neue", Helvetica, Arial, "Liberation Sans", sans-serif;
+  color: var(--tinta);
+  font-size: 10.5pt;
+  line-height: 1.45;
+  background: #fff;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.hoja { max-width: 190mm; margin: 0 auto; }
+
+/* --- encabezado --- */
+.encabezado {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--acento);
+}
+.marca { display: flex; align-items: center; gap: 12px; }
+.logo { max-height: 52px; max-width: 170px; object-fit: contain; }
+.estudio { font-size: 13pt; font-weight: 700; letter-spacing: .2px; }
+.estudio-contacto { font-size: 8.5pt; color: var(--tinta-suave); }
+.sello { text-align: right; }
+.sello-titulo {
+  font-size: 8pt; text-transform: uppercase; letter-spacing: 1.4px;
+  color: var(--tinta-suave);
+}
+.sello-periodo { font-size: 13pt; font-weight: 700; color: var(--acento); }
+
+/* --- títulos --- */
+.titulo { font-size: 18pt; margin: 18px 0 2px; letter-spacing: -.3px; }
+.bajada { margin: 0 0 16px; color: var(--tinta-suave); font-size: 9.5pt; }
+
+h2 {
+  font-size: 10pt; text-transform: uppercase; letter-spacing: 1px;
+  color: var(--tinta-suave); margin: 0 0 8px;
+}
+
+/* --- ficha del contribuyente --- */
+.ficha {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px 18px;
+  background: var(--fondo-suave);
+  border: 1px solid var(--linea);
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-bottom: 18px;
+}
+.ficha > div { display: flex; flex-direction: column; min-width: 0; }
+.etiqueta {
+  font-size: 7.5pt; text-transform: uppercase; letter-spacing: .8px;
+  color: var(--tinta-suave);
+}
+.valor { font-size: 10.5pt; font-weight: 600; word-break: break-word; }
+
+/* --- monto destacado --- */
+.monto {
+  background: var(--alerta-fondo);
+  border: 1px solid #f0dcb8;
+  border-left: 5px solid var(--alerta);
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin-bottom: 20px;
+}
+.monto.sin-pago {
+  background: var(--ok-fondo);
+  border-color: #cfe7da;
+  border-left-color: var(--ok);
+}
+.monto-etiqueta {
+  font-size: 8pt; text-transform: uppercase; letter-spacing: 1.2px;
+  color: var(--alerta); font-weight: 700;
+}
+.monto.sin-pago .monto-etiqueta { color: var(--ok); }
+.monto-cifra { font-size: 30pt; font-weight: 700; line-height: 1.1; letter-spacing: -1px; }
+.monto-plazo { font-size: 9.5pt; color: var(--tinta-suave); }
+
+/* --- bloques y tablas --- */
+.bloque { margin-bottom: 18px; page-break-inside: avoid; }
+.tabla { width: 100%; border-collapse: collapse; font-size: 9.5pt; }
+.tabla th {
+  text-align: left; font-size: 7.5pt; text-transform: uppercase; letter-spacing: .8px;
+  color: var(--tinta-suave); border-bottom: 1.5px solid var(--linea);
+  padding: 6px 8px; font-weight: 600;
+}
+.tabla td { padding: 6px 8px; border-bottom: 1px solid var(--linea); vertical-align: top; }
+.tabla tbody tr:nth-child(even) { background: #fafcfe; }
+.tabla .cod { width: 62px; color: var(--tinta-suave); font-variant-numeric: tabular-nums; }
+.tabla .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.datos-pago td:first-child { width: 42%; color: var(--tinta-suave); }
+
+.aviso-sii { background: var(--acento-fondo); border-radius: 8px; padding: 12px 14px; }
+.aviso-sii p { margin: 0 0 6px; font-size: 9.5pt; }
+.enlace { color: var(--acento); font-size: 9pt; word-break: break-all; }
+
+.captura {
+  width: 100%;
+  border: 1px solid var(--linea);
+  border-radius: 6px;
+}
+
+.nota {
+  font-size: 9pt; color: var(--tinta-suave);
+  background: var(--fondo-suave); border-radius: 6px; padding: 10px 12px;
+}
+
+.pie {
+  margin-top: 22px; padding-top: 10px;
+  border-top: 1px solid var(--linea);
+  font-size: 8pt; color: var(--tinta-suave);
+}
+.pie p { margin: 0 0 2px; }

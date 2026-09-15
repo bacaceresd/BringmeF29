@@ -1,0 +1,124 @@
+# BringmeF29 — configuración
+#
+# Copia este archivo a config/clientes.yml y complétalo. clientes.yml está en
+# .gitignore: contiene datos de tus clientes y nunca debe llegar al repositorio.
+#
+# Los secretos (claves tributarias, contraseña SMTP, tokens) NO van aquí.
+# Se resuelven desde variables de entorno con la sintaxis  env:NOMBRE_VARIABLE,
+# o desde el almacén cifrado (bringmef29 clave guardar <cliente>).
+
+# --------------------------------------------------------------------------- #
+# Quién emite el aviso
+# --------------------------------------------------------------------------- #
+estudio:
+  nombre: "BC Consulting"
+  rut: "77.111.222-6"
+  correo: "contacto@bcconsulting.cl"
+  telefono: "+56 9 1234 5678"
+  sitio_web: "www.bcconsulting.cl"
+  # Se incrusta en el PDF y en la imagen de WhatsApp. PNG o JPG, fondo transparente
+  # o claro para el PDF. Ruta relativa a la raíz del proyecto.
+  logo: "plantillas/activos/logo.png"
+
+# --------------------------------------------------------------------------- #
+# Cómo paga el contribuyente
+# --------------------------------------------------------------------------- #
+pago:
+  # transferencia = te transfieren a ti | sii = pagan directo en el SII | ambos
+  modo: "ambos"
+  titular: "BC Consulting SpA"
+  rut_titular: "77.111.222-6"
+  banco: "Banco de Chile"
+  tipo_cuenta: "Cuenta Corriente"
+  numero_cuenta: "00-123-45678-90"
+  correo_confirmacion: "pagos@bcconsulting.cl"
+  url_pago_sii: "https://www.sii.cl/servicios_online/1044-.html"
+  nota: >
+    Una vez transferido, envíanos el comprobante para dejar el pago
+    registrado en tu cuenta corriente tributaria.
+
+# --------------------------------------------------------------------------- #
+# Correo saliente
+# --------------------------------------------------------------------------- #
+correo:
+  servidor: "smtp.gmail.com"
+  puerto: 587
+  seguridad: "starttls"          # starttls | ssl | ninguna
+  usuario: "contacto@bcconsulting.cl"
+  clave: "env:BRINGMEF29_SMTP_CLAVE"
+  remitente: "contacto@bcconsulting.cl"
+  nombre_remitente: "BC Consulting"
+  responder_a: "contacto@bcconsulting.cl"
+  # Campos disponibles: {periodo} {periodo_codigo} {razon_social} {rut} {folio} {monto}
+  asunto: "F29 {periodo} — {razon_social}"
+
+# --------------------------------------------------------------------------- #
+# WhatsApp
+# --------------------------------------------------------------------------- #
+whatsapp:
+  # enlace  → arma un link wa.me listo para enviar desde tu teléfono (sin API)
+  # twilio  → WhatsApp Business vía Twilio
+  # meta    → WhatsApp Cloud API de Meta
+  proveedor: "enlace"
+
+  # --- twilio ---
+  twilio_sid: ""
+  twilio_token: "env:BRINGMEF29_TWILIO_TOKEN"
+  twilio_desde: "whatsapp:+14155238886"
+
+  # --- meta ---
+  meta_phone_number_id: ""
+  meta_token: "env:BRINGMEF29_META_TOKEN"
+  meta_plantilla: ""             # nombre de la plantilla aprobada, si la usas
+  meta_idioma: "es"
+
+  # Twilio y Meta sólo adjuntan archivos que puedan descargar por HTTPS.
+  # Si publicas la carpeta de salida en una URL, ponla aquí; si no, el mensaje
+  # va sólo con texto y el PDF viaja por correo.
+  url_publica_base: ""
+
+  # Opcional. Si la dejas vacía se usa el mensaje por defecto.
+  # Campos: {nombre} {razon_social} {rut} {periodo} {periodo_codigo} {folio}
+  #         {monto} {vencimiento} {estudio}
+  plantilla_mensaje: ""
+
+# --------------------------------------------------------------------------- #
+# Acceso al SII
+# --------------------------------------------------------------------------- #
+sii:
+  modo: "auto"                   # auto | api | navegador
+  headless: true                 # false para ver el navegador en pantalla
+  timeout_ms: 45000
+  ruta_chromium: ""              # vacío = el que trae Playwright
+  directorio_estado: ".estado_sii"
+  guardar_capturas: true         # capturas de pantalla cuando algo falla
+
+# Dónde quedan los PDF, imágenes y JSON generados.
+directorio_salida: "salida"
+ruta_almacen_claves: ".secretos/claves.json"
+
+# --------------------------------------------------------------------------- #
+# Clientes
+# --------------------------------------------------------------------------- #
+clientes:
+  - alias: "acme"
+    rut: "76.086.428-5"
+    razon_social: "Comercial Acme SpA"
+    nombre_contacto: "Ana"
+    correo:
+      - "ana@acme.cl"
+      - "contabilidad@acme.cl"
+    correo_copia: []
+    whatsapp: "+56 9 1111 2222"
+    # La clave tributaria NO se escribe aquí. Guárdala con:
+    #   bringmef29 clave guardar acme
+    # o expórtala como  BRINGMEF29_CLAVE_ACME
+    # Si prefieres referenciar una variable explícita:
+    # clave_sii: "env:BRINGMEF29_CLAVE_ACME"
+
+  - alias: "ferreteria-sur"
+    rut: "77.222.333-1"
+    razon_social: "Ferretería Sur Limitada"
+    nombre_contacto: "Rodrigo"
+    correo: ["rodrigo@ferreteriasur.cl"]
+    whatsapp: "+56 9 3333 4444"

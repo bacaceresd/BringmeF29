@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bringmef29"
+version = "0.1.0"
+description = "Obtiene el F29 declarado en el SII y genera/envía el aviso de pago al contribuyente por correo y WhatsApp."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Propietario" }
+
+dependencies = [
+    "requests>=2.31",
+    "beautifulsoup4>=4.12",
+    "lxml>=5.0",
+    "PyYAML>=6.0",
+    "Jinja2>=3.1",
+    "cryptography>=41.0",
+    "python-dotenv>=1.0",
+    "playwright>=1.40",
+]
+
+[project.optional-dependencies]
+twilio = ["twilio>=9.0"]
+dev = ["pytest>=8.0", "pytest-cov>=5.0"]
+
+[project.scripts]
+bringmef29 = "bringmef29.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+bringmef29 = ["recursos/*.yml", "recursos/*.j2", "recursos/*.css"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+filterwarnings = ["ignore::DeprecationWarning"]

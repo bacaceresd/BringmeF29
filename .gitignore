@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Secretos y datos de contribuyentes — NUNCA versionar
+.env
+*.env
+!.env.example
+config/clientes.yml
+config/clientes.*.yml
+!config/clientes.example.yml
+.secretos/
+secretos/
+*.key
+master.key
+
+# Salidas generadas (contienen datos tributarios reales)
+salida/
+out/
+*.pdf
+*.png
+!plantillas/activos/*.png
+!docs/**/*.png
+
+# Sesiones del SII
+.sesiones/
+.estado_sii/
+estado_sii/

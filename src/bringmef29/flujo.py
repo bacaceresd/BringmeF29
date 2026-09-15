@@ -16,12 +16,21 @@ from .config import Config
 from .documentos import ConstructorDocumentos
 from .envio.correo import EnviadorCorreo, ErrorEnvioCorreo
 from .envio.whatsapp import EnviadorWhatsApp, ErrorEnvioWhatsApp
-from .modelos import AvisoPago, Contribuyente, DeclaracionF29, LineaCodigo, Periodo
+from .modelos import (
+    PROCEDENCIA_DESCONOCIDA,
+    AvisoPago,
+    Contribuyente,
+    DeclaracionF29,
+    LineaCodigo,
+    Periodo,
+)
 from .rut import Rut
 from .sii import errores as errores_sii
 from .sii.f29_api import ClienteF29Api
 from .sii.f29_navegador import obtener_declaracion as obtener_con_navegador
 from .sii.sesion import autenticar
+
+FUENTES = ("guardada", "presentada", "auto")
 
 _log = logging.getLogger(__name__)
 
@@ -45,25 +54,48 @@ def obtener(
     contribuyente: Contribuyente,
     periodo: Periodo,
     *,
+    fuente: str = "",
     modo: str = "",
     headless: bool | None = None,
 ) -> ResultadoObtencion:
-    """Trae el F29 del período usando el modo configurado.
+    """Trae el F29 del período.
 
-    ``auto`` intenta primero los servicios JSON (rápido) y cae al navegador si
-    el SII responde algo inesperado. El modo navegador es el único que puede
-    capturar la pantalla del comprobante y bajar el PDF oficial.
+    ``fuente`` elige **cuál** de los formularios del SII se lee:
+
+    ``guardada``
+        El F29 que el contribuyente llenó y guardó, sin enviar. Es el valor por
+        defecto: es la versión del contador, no la del SII.
+    ``presentada``
+        La declaración ya enviada, con folio.
+    ``auto``
+        La guardada y, si no existe, la presentada.
+
+    ``modo`` elige **cómo** se lee. La vía API sólo alcanza las declaraciones
+    presentadas; el formulario guardado vive en la aplicación de declaración y
+    requiere navegador, así que pedir ``guardada`` por API es un error.
     """
+    fuente = (fuente or config.sii.fuente or "guardada").lower()
+    if fuente not in FUENTES:
+        raise ValueError(f"Fuente desconocida: {fuente!r} (usa {', '.join(FUENTES)})")
+
     modo = (modo or config.sii.modo or "auto").lower()
+    if modo not in ("auto", "api", "navegador"):
+        raise ValueError(f"Modo de obtención desconocido: {modo!r} (usa auto, api o navegador)")
+
     clave = config.clave_sii(contribuyente)
     headless = config.sii.headless if headless is None else headless
 
+    if modo == "api" and fuente != "presentada":
+        raise ValueError(
+            f"La vía API sólo alcanza las declaraciones presentadas, y pediste "
+            f"la fuente '{fuente}'. Usa --modo navegador, o --fuente presentada."
+        )
+
+    if modo == "navegador" or fuente != "presentada":
+        # El F29 guardado sólo se alcanza con el navegador.
+        return _obtener_navegador(config, contribuyente, periodo, clave, headless, fuente)
     if modo == "api":
         return ResultadoObtencion(_obtener_api(config, contribuyente, periodo, clave))
-    if modo == "navegador":
-        return _obtener_navegador(config, contribuyente, periodo, clave, headless)
-    if modo != "auto":
-        raise ValueError(f"Modo de obtención desconocido: {modo!r} (usa auto, api o navegador)")
 
     try:
         return ResultadoObtencion(_obtener_api(config, contribuyente, periodo, clave))
@@ -71,7 +103,7 @@ def obtener(
         raise
     except errores_sii.ErrorSii as exc:
         _log.warning("La vía API falló (%s). Reintentando con el navegador.", exc)
-        return _obtener_navegador(config, contribuyente, periodo, clave, headless)
+        return _obtener_navegador(config, contribuyente, periodo, clave, headless, fuente)
 
 
 def _obtener_api(
@@ -82,12 +114,18 @@ def _obtener_api(
 
 
 def _obtener_navegador(
-    config: Config, contribuyente: Contribuyente, periodo: Periodo, clave: str, headless: bool
+    config: Config,
+    contribuyente: Contribuyente,
+    periodo: Periodo,
+    clave: str,
+    headless: bool,
+    fuente: str = "guardada",
 ) -> ResultadoObtencion:
     declaracion, captura, pdf_oficial = obtener_con_navegador(
         contribuyente.rut,
         clave,
         periodo,
+        fuente=fuente,
         headless=headless,
         ejecutable=config.sii.ruta_chromium,
         timeout_ms=config.sii.timeout_ms,
@@ -96,6 +134,40 @@ def _obtener_navegador(
         guardar_capturas=config.sii.guardar_capturas,
     )
     return ResultadoObtencion(declaracion, captura, pdf_oficial)
+
+
+# --------------------------------------------------------------------------- #
+# Guardia de procedencia
+# --------------------------------------------------------------------------- #
+
+
+def verificar_procedencia(declaracion: DeclaracionF29, *, permitir_propuesta: bool = False) -> None:
+    """Se niega a seguir si lo que se leyó no es el F29 del contribuyente.
+
+    El costo de equivocarse es asimétrico: cobrarle a un cliente el monto de la
+    propuesta del SII —que no lleva sus PPM, retenciones ni remanentes— es un
+    error que llega a su bolsillo. Ante una procedencia que no se pudo
+    determinar, esto se detiene en vez de adivinar.
+    """
+    if declaracion.es_propuesta_del_sii:
+        if permitir_propuesta:
+            _log.warning(
+                "Se continúa con la PROPUESTA DEL SII por pedido explícito: los montos "
+                "no son los que declaró el contribuyente."
+            )
+            return
+        raise errores_sii.DeclaracionEsPropuesta(
+            "Lo que se leyó es la propuesta del SII, no el F29 del contribuyente. "
+            "No se generó ningún aviso. Si de verdad quieres usar la propuesta, "
+            "repite con --permitir-propuesta."
+        )
+    if declaracion.procedencia == PROCEDENCIA_DESCONOCIDA:
+        raise errores_sii.RespuestaInesperada(
+            "No se pudo determinar si el formulario leído es el del contribuyente o la "
+            "propuesta del SII, así que no se generó ningún aviso. Revísalo con:\n"
+            "  bringmef29 traer <cliente> --modo navegador --sin-headless -v"
+        )
+    _log.info("Procedencia verificada: %s", declaracion.procedencia_glosa)
 
 
 # --------------------------------------------------------------------------- #
@@ -108,8 +180,10 @@ def procesar(
     referencia_cliente: str,
     periodo: Periodo,
     *,
+    fuente: str = "",
     modo: str = "",
     headless: bool | None = None,
+    permitir_propuesta: bool = False,
     enviar_correo: bool = True,
     enviar_whatsapp: bool = True,
     simular_envio: bool = False,
@@ -125,13 +199,19 @@ def procesar(
         declaracion = cargar_declaracion(desde_archivo)
         captura, pdf_oficial = "", ""
     else:
-        resultado = obtener(config, contribuyente, periodo, modo=modo, headless=headless)
+        resultado = obtener(
+            config, contribuyente, periodo, fuente=fuente, modo=modo, headless=headless
+        )
         declaracion, captura, pdf_oficial = (
             resultado.declaracion,
             resultado.captura,
             resultado.pdf_oficial,
         )
         guardar_declaracion(config, declaracion)
+
+    # Nada se genera ni se envía hasta saber que el formulario es el del
+    # contribuyente y no la propuesta del SII.
+    verificar_procedencia(declaracion, permitir_propuesta=permitir_propuesta)
 
     documentos = ConstructorDocumentos(config).construir(
         declaracion, contribuyente, captura_sii=captura, guardar_html=guardar_html
@@ -208,7 +288,8 @@ def cargar_declaracion(ruta: str | Path) -> DeclaracionF29:
         folio=datos.get("folio", ""),
         estado=datos.get("estado", ""),
         razon_social=datos.get("razon_social", ""),
-        origen=datos.get("origen", "archivo"),
+        via=datos.get("via", "archivo"),
+        procedencia=datos.get("procedencia", PROCEDENCIA_DESCONOCIDA),
         url_comprobante=datos.get("url_comprobante", ""),
         lineas=[
             LineaCodigo(
@@ -229,7 +310,8 @@ def _a_dict(declaracion: DeclaracionF29) -> dict:
         "folio": declaracion.folio,
         "estado": declaracion.estado,
         "razon_social": declaracion.razon_social,
-        "origen": declaracion.origen,
+        "via": declaracion.via,
+        "procedencia": declaracion.procedencia,
         "url_comprobante": declaracion.url_comprobante,
         "monto_a_pagar": str(declaracion.monto_a_pagar),
         "lineas": [

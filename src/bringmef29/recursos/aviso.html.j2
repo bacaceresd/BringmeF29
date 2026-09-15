@@ -30,7 +30,13 @@
     {% if hay_que_pagar %}Aviso de pago{% else %}Comprobante de declaración{% endif %}
   </h1>
   <p class="bajada">
-    Declaración mensual de IVA y retenciones (F29) presentada ante el Servicio de Impuestos Internos.
+    {% if procedencia == "presentada" %}
+      Declaración mensual de IVA y retenciones (F29) presentada ante el Servicio de Impuestos Internos.
+    {% elif procedencia == "guardada" %}
+      Declaración mensual de IVA y retenciones (F29) preparada en el Servicio de Impuestos Internos.
+    {% else %}
+      Declaración mensual de IVA y retenciones (F29) del Servicio de Impuestos Internos.
+    {% endif %}
   </p>
 
   <section class="ficha">
@@ -39,8 +45,17 @@
     <div><span class="etiqueta">Período tributario</span><span class="valor">{{ periodo.etiqueta }}</span></div>
     <div><span class="etiqueta">Folio SII</span><span class="valor">{{ folio or "—" }}</span></div>
     {% if estado %}<div><span class="etiqueta">Estado</span><span class="valor">{{ estado }}</span></div>{% endif %}
+    <div class="ancho"><span class="etiqueta">Formulario</span><span class="valor">{{ procedencia_glosa }}</span></div>
     <div><span class="etiqueta">Emitido</span><span class="valor">{{ emitido }}</span></div>
   </section>
+
+  {% if es_propuesta_del_sii %}
+  <section class="advertencia">
+    <strong>Atención:</strong> las cifras de este documento provienen de la propuesta que
+    arma el SII con el Registro de Compras y Ventas, no de la declaración del
+    contribuyente. No las uses para cobrar sin revisarlas.
+  </section>
+  {% endif %}
 
   {% if hay_que_pagar %}
   <section class="monto">

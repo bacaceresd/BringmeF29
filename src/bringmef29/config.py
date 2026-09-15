@@ -77,6 +77,9 @@ class ConfigWhatsApp:
 
 @dataclass
 class ConfigSii:
+    # Cuál de los formularios del SII se lee. "guardada" es el F29 que el
+    # contribuyente llenó y grabó, no la propuesta que arma el SII.
+    fuente: str = "guardada"         # "guardada" | "presentada" | "auto"
     modo: str = "auto"               # "auto" | "api" | "navegador"
     headless: bool = True
     timeout_ms: int = 45000

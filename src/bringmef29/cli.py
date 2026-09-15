@@ -119,6 +119,19 @@ def _opciones_periodo(p: argparse.ArgumentParser) -> None:
 
 def _opciones_sii(p: argparse.ArgumentParser) -> None:
     p.add_argument(
+        "--fuente",
+        choices=("guardada", "presentada", "auto"),
+        help=(
+            "Cuál F29 leer: 'guardada' (el que llenaste y grabaste, por defecto), "
+            "'presentada' (la enviada, con folio) o 'auto'. Nunca la propuesta del SII."
+        ),
+    )
+    p.add_argument(
+        "--permitir-propuesta",
+        action="store_true",
+        help="Continúa aunque lo leído sea la propuesta del SII. Los montos no serán los tuyos.",
+    )
+    p.add_argument(
         "--modo",
         choices=("auto", "api", "navegador"),
         help="Cómo consultar el SII (por defecto, el de la configuración).",
@@ -176,7 +189,12 @@ def _comando_cliente(config: Config, args: argparse.Namespace) -> int:
     if args.comando == "traer":
         contribuyente = config.cliente(args.cliente)
         resultado = flujo.obtener(
-            config, contribuyente, periodo, modo=args.modo or "", headless=headless
+            config,
+            contribuyente,
+            periodo,
+            fuente=args.fuente or "",
+            modo=args.modo or "",
+            headless=headless,
         )
         flujo.guardar_declaracion(config, resultado.declaracion)
         _imprimir_declaracion(resultado.declaracion)
@@ -190,8 +208,10 @@ def _comando_cliente(config: Config, args: argparse.Namespace) -> int:
         config,
         args.cliente,
         periodo,
+        fuente=args.fuente or "",
         modo=args.modo or "",
         headless=headless,
+        permitir_propuesta=getattr(args, "permitir_propuesta", False),
         solo_documentos=args.comando == "documentos",
         enviar_correo=not getattr(args, "solo_whatsapp", False),
         enviar_whatsapp=not getattr(args, "solo_correo", False),
@@ -226,8 +246,10 @@ def _comando_lote(config: Config, args: argparse.Namespace) -> int:
                 config,
                 referencia,
                 periodo,
+                fuente=args.fuente or "",
                 modo=args.modo or "",
                 headless=False if args.sin_headless else None,
+                permitir_propuesta=args.permitir_propuesta,
                 solo_documentos=args.sin_envio,
                 simular_envio=args.simular,
             )
@@ -324,7 +346,9 @@ def _imprimir_declaracion(declaracion) -> None:
     print(f"  Folio           : {declaracion.folio or '—'}")
     if declaracion.estado:
         print(f"  Estado          : {declaracion.estado}")
-    print(f"  Origen del dato : {declaracion.origen}")
+    marca = "✓" if declaracion.es_del_contribuyente else "⚠"
+    print(f"  {marca} Formulario    : {declaracion.procedencia_glosa}")
+    print(f"  Leído vía       : {declaracion.via or '—'}")
     print(f"  Códigos leídos  : {len(declaracion.lineas)}")
     if declaracion.hay_que_pagar:
         print(f"  Total a pagar   : {pesos(declaracion.monto_a_pagar)}")

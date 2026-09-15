@@ -86,7 +86,16 @@ whatsapp:
 # Acceso al SII
 # --------------------------------------------------------------------------- #
 sii:
+  # Cuál de los tres F29 del SII se lee:
+  #   guardada   → el formulario que TÚ llenaste y grabaste (por defecto)
+  #   presentada → la declaración ya enviada, con folio
+  #   auto       → la guardada y, si no hay, la presentada
+  # La propuesta que el SII arma desde el Registro de Compras y Ventas nunca se
+  # usa: el programa se detiene si detecta que es lo que quedó en pantalla.
+  fuente: "guardada"
+
   modo: "auto"                   # auto | api | navegador
+                                 # ojo: la vía api sólo ve declaraciones presentadas
   headless: true                 # false para ver el navegador en pantalla
   timeout_ms: 45000
   ruta_chromium: ""              # vacío = el que trae Playwright

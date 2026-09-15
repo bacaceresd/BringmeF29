@@ -20,6 +20,7 @@ import requests
 
 from ..modelos import DeclaracionF29, LineaCodigo, Periodo
 from ..rut import Rut
+from . import procedencia as clasificador
 from .errores import DeclaracionNoEncontrada, RespuestaInesperada
 from .sesion import SesionSii
 
@@ -101,7 +102,13 @@ class ClienteF29Api:
         )
 
     def obtener(self, rut: Rut, periodo: Periodo) -> DeclaracionF29:
-        """Trae la declaración vigente del período, con todos sus códigos."""
+        """Trae la declaración **presentada** del período, con todos sus códigos.
+
+        Esta vía consulta el servicio de seguimiento de declaraciones, que sólo ve
+        los F29 ya enviados al SII. El formulario que el contribuyente guardó sin
+        enviar vive en la aplicación de declaración y únicamente se alcanza por el
+        modo navegador.
+        """
         declaraciones = self.listar_declaraciones(rut, periodo)
         if not declaraciones:
             raise DeclaracionNoEncontrada(
@@ -118,15 +125,19 @@ class ClienteF29Api:
                 f"Se encontró el folio {folio} pero no se pudo leer ningún código del F29. "
                 "Reintenta con --modo navegador."
             )
+        estado = str(_primer_valor(cabecera, ("estado", "glosaEstado", "descEstado")) or "")
         return DeclaracionF29(
             rut=rut,
             periodo=periodo,
             folio=str(folio),
-            estado=str(_primer_valor(cabecera, ("estado", "glosaEstado", "descEstado")) or ""),
+            estado=estado,
             razon_social=str(_primer_valor(crudo, ("razonSocial", "nombreContribuyente")) or ""),
             fecha_presentacion=None,
             lineas=lineas,
-            origen="api",
+            via="api",
+            procedencia=clasificador.clasificar(
+                crudo={"cabecera": cabecera, "detalle": crudo}, folio=str(folio), estado=estado
+            ),
             crudo={"cabecera": cabecera, "detalle": crudo},
         )
 

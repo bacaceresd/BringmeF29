@@ -4,7 +4,7 @@ from decimal import Decimal
 import pytest
 
 from bringmef29 import config as modulo_config
-from bringmef29.modelos import DeclaracionF29, LineaCodigo, Periodo
+from bringmef29.modelos import GUARDADA, PRESENTADA, DeclaracionF29, LineaCodigo, Periodo
 from bringmef29.rut import Rut
 from bringmef29.seguridad import generar_clave_maestra
 
@@ -66,7 +66,8 @@ def declaracion_con_pago():
         folio="7654321098",
         estado="Vigente",
         razon_social="Comercial Acme SpA",
-        origen="api",
+        via="api",
+        procedencia=PRESENTADA,
         lineas=[
             LineaCodigo("563", Decimal("18500000")),
             LineaCodigo("538", Decimal("3515000")),
@@ -86,6 +87,8 @@ def declaracion_sin_pago():
         periodo=Periodo(2025, 8),
         folio="7654321099",
         razon_social="Comercial Acme SpA",
+        via="navegador",
+        procedencia=GUARDADA,
         lineas=[
             LineaCodigo("538", Decimal("1000000")),
             LineaCodigo("537", Decimal("1400000")),

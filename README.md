@@ -1,8 +1,13 @@
 # BringmeF29
 
-Trae el **Formulario 29** que ya está declarado en el SII, arma un **PDF de aviso de
-pago** con la imagen del comprobante y lo despacha al contribuyente por **correo y
-WhatsApp**, con el monto y los datos para que transfiera o pague directo en el SII.
+Trae el **Formulario 29 que tú llenaste y guardaste** en el SII, arma un **PDF de
+aviso de pago** con la imagen del comprobante y lo despacha al contribuyente por
+**correo y WhatsApp**, con el monto y los datos para que transfiera o pague directo
+en el SII.
+
+> **No usa la propuesta del SII.** Ese es el punto: el programa lee tu formulario,
+> no el borrador que el SII pre-arma desde el Registro de Compras y Ventas, y se
+> detiene sin generar nada si no logra distinguirlos.
 
 Pensado para el ciclo mensual de un estudio contable: declaras el F29 en el SII y,
 en una sola línea de comandos, el cliente recibe cuánto tiene que pagar, hasta
@@ -120,7 +125,9 @@ Opciones útiles:
 
 | Opción | Efecto |
 |---|---|
-| `--modo api\|navegador\|auto` | Cómo consultar el SII. `auto` (por defecto) intenta la API y cae al navegador. |
+| `--fuente guardada\|presentada\|auto` | Cuál F29 leer. `guardada` por defecto: el que llenaste tú. |
+| `--permitir-propuesta` | Continúa aunque lo leído sea la propuesta del SII. Los montos no serán los tuyos. |
+| `--modo api\|navegador\|auto` | Cómo consultar el SII. |
 | `--sin-headless` | Muestra el navegador en pantalla. Imprescindible para ver qué está pidiendo el SII cuando algo falla. |
 | `--solo-correo` / `--solo-whatsapp` | Usa un solo canal. |
 | `--para otro@correo.cl` | Manda el aviso a otra dirección (repetible). |
@@ -149,6 +156,50 @@ conversación fuera de ella hace falta una plantilla aprobada (`meta_plantilla`)
 
 ---
 
+## Cuál F29 trae (y cuál no)
+
+El SII mantiene **tres** formularios distintos para un mismo período:
+
+| | Qué es | ¿Sirve para cobrar? |
+|---|---|---|
+| **Propuesta** | El borrador que el SII pre-arma con el Registro de Compras y Ventas. | **No.** No lleva PPM, retenciones, remanentes arrastrados ni ningún ajuste que hagas a mano. |
+| **Guardada** | El formulario que tú llenaste y grabaste, todavía sin enviar. | Sí. Es la versión del contador. |
+| **Presentada** | La declaración ya enviada, con folio. | Sí. |
+
+Por defecto se lee la **guardada**. Se cambia con `--fuente`:
+
+```bash
+bringmef29 enviar acme --fuente guardada     # el que llenaste tú (por defecto)
+bringmef29 enviar acme --fuente presentada   # la ya enviada, con folio
+bringmef29 enviar acme --fuente auto         # la guardada y, si no hay, la presentada
+```
+
+### La salvaguarda
+
+Cobrarle a un cliente el monto de la propuesta es un error que llega a su
+bolsillo, así que el programa trata ese caso como bloqueante, no como advertencia:
+
+- Clasifica cada formulario que lee mirando el texto, la URL y el JSON crudo, y
+  **ante la duda no afirma** que sea tuyo.
+- Si lo leído es la propuesta, **no genera ni envía nada** y lo dice. Sólo
+  continúa con `--permitir-propuesta`, y entonces el PDF sale con una advertencia
+  roja encima del monto.
+- Si no logró clasificarlo, también se detiene, con el comando exacto para
+  revisarlo a ojo.
+- La procedencia queda impresa en el PDF (fila *Formulario*), guardada en el JSON
+  y visible en la terminal con un `✓` o un `⚠`.
+
+Lo puedes ver en cualquier momento sin enviar nada:
+
+```bash
+bringmef29 traer acme -p 2025-08
+```
+
+```
+  ✓ Formulario    : Declaración guardada por el contribuyente (sin enviar)
+  Leído vía       : navegador
+```
+
 ## Cómo se obtiene el F29
 
 Hay dos caminos, y `auto` los usa en este orden:
@@ -156,12 +207,16 @@ Hay dos caminos, y `auto` los usa en este orden:
 1. **`api`** — Una vez autenticado, la aplicación de consulta de declaraciones del
    SII (`sifmConsultaInternet`) pide sus datos a unos endpoints JSON. El programa
    los llama directo, sin navegador. Es rápido, pero son **endpoints internos, no
-   documentados y sin contrato estable**.
+   documentados y sin contrato estable**, y **sólo alcanza declaraciones
+   presentadas**: el formulario guardado vive en la aplicación de declaración.
+   Por eso pedir `--fuente guardada --modo api` es un error, y con la fuente por
+   defecto se va directo al navegador.
 2. **`navegador`** — Abre el sitio real con Chromium, se autentica en el
    formulario y deja que la propia aplicación del SII pida sus datos; el programa
-   escucha las respuestas JSON que pasan por la red. Aguanta mejor los cambios del
-   sitio, y es el único modo que captura la pantalla del comprobante y baja el PDF
-   oficial.
+   escucha las respuestas JSON que pasan por la red y, cuando el formulario está
+   abierto en modo edición, lee los valores directo de los campos —que es donde
+   vive el F29 guardado—. Aguanta mejor los cambios del sitio, alcanza los tres
+   formularios, y es el único modo que captura la pantalla y baja el PDF oficial.
 
 En ambos casos el parseo es deliberadamente tolerante: busca pares
 código/valor en cualquier parte del JSON, sin depender de una estructura fija, y
@@ -235,7 +290,7 @@ clave, y no correr esto en un equipo compartido.
 
 ```bash
 pip install -e ".[dev]"
-pytest              # 126 pruebas
+pytest              # 163 pruebas
 pytest -k documentos   # sólo el armado del PDF y la imagen
 ```
 
@@ -255,6 +310,7 @@ src/bringmef29/
 ├── seguridad.py       Cifrado de claves y redacción de logs
 ├── sii/
 │   ├── sesion.py        Autenticación con RUT y clave tributaria
+│   ├── procedencia.py   Distingue propuesta / guardada / presentada
 │   ├── f29_api.py       Consulta por los servicios JSON internos
 │   └── f29_navegador.py Consulta manejando el sitio con Chromium
 ├── documentos/

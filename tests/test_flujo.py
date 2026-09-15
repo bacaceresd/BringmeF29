@@ -33,6 +33,7 @@ def test_modo_desconocido(config, monkeypatch):
 
 
 def test_auto_cae_al_navegador_si_la_api_falla(config, monkeypatch, declaracion_con_pago):
+    """Con fuente 'presentada' la vía API es válida; si falla, debe usarse el navegador."""
     monkeypatch.setenv("BRINGMEF29_CLAVE_ACME", "x")
     llamadas = []
 
@@ -47,7 +48,9 @@ def test_auto_cae_al_navegador_si_la_api_falla(config, monkeypatch, declaracion_
     monkeypatch.setattr(flujo, "_obtener_api", api_falla)
     monkeypatch.setattr(flujo, "obtener_con_navegador", navegador_responde)
 
-    resultado = flujo.obtener(config, config.cliente("acme"), Periodo(2025, 8), modo="auto")
+    resultado = flujo.obtener(
+        config, config.cliente("acme"), Periodo(2025, 8), fuente="presentada", modo="auto"
+    )
 
     assert llamadas == ["api", "navegador"]
     assert resultado.declaracion is declaracion_con_pago
@@ -71,7 +74,9 @@ def test_auto_no_reintenta_si_la_clave_es_incorrecta(config, monkeypatch):
     monkeypatch.setattr(flujo, "obtener_con_navegador", navegador)
 
     with pytest.raises(ErrorAutenticacion):
-        flujo.obtener(config, config.cliente("acme"), Periodo(2025, 8), modo="auto")
+        flujo.obtener(
+            config, config.cliente("acme"), Periodo(2025, 8), fuente="presentada", modo="auto"
+        )
     assert llamadas == ["api"]
 
 

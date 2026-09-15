@@ -91,9 +91,26 @@ class LineaCodigo:
         return self.codigo.lstrip("0") or "0"
 
 
+# Procedencia del formulario dentro del SII. La distinción importa: en el portal
+# conviven la propuesta que arma el SII desde el Registro de Compras y Ventas y el
+# formulario que el contribuyente llenó él mismo. Sólo el segundo sirve para
+# cobrarle al cliente.
+PRESENTADA = "presentada"      # enviada al SII, con folio
+GUARDADA = "guardada"          # el contribuyente la llenó y guardó, sin enviar
+PROPUESTA = "propuesta"        # borrador que el SII pre-arma desde el RCV
+PROCEDENCIA_DESCONOCIDA = "desconocida"
+
+PROCEDENCIAS_DEL_CONTRIBUYENTE = (GUARDADA, PRESENTADA)
+
+
 @dataclass
 class DeclaracionF29:
-    """Una declaración F29 tal como quedó guardada/presentada en el SII."""
+    """Una declaración F29 leída del SII.
+
+    ``procedencia`` dice de cuál de los tres formularios del portal proviene.
+    Es lo primero que hay que mirar antes de cobrarle nada a un cliente: la
+    propuesta del SII no es la declaración del contribuyente.
+    """
 
     rut: Rut
     periodo: Periodo
@@ -102,9 +119,28 @@ class DeclaracionF29:
     fecha_presentacion: datetime | None = None
     razon_social: str = ""
     lineas: list[LineaCodigo] = field(default_factory=list)
-    origen: str = ""          # "api", "navegador" o "archivo"
+    via: str = ""                                  # "api", "navegador" o "archivo"
+    procedencia: str = PROCEDENCIA_DESCONOCIDA
     url_comprobante: str = ""
     crudo: dict = field(default_factory=dict, repr=False)
+
+    # -- procedencia --------------------------------------------------------
+    @property
+    def es_propuesta_del_sii(self) -> bool:
+        return self.procedencia == PROPUESTA
+
+    @property
+    def es_del_contribuyente(self) -> bool:
+        """True sólo si el formulario lo llenó el contribuyente, no el SII."""
+        return self.procedencia in PROCEDENCIAS_DEL_CONTRIBUYENTE
+
+    @property
+    def procedencia_glosa(self) -> str:
+        return {
+            PRESENTADA: "Declaración presentada al SII",
+            GUARDADA: "Declaración guardada por el contribuyente (sin enviar)",
+            PROPUESTA: "Propuesta del SII (no es la declaración del contribuyente)",
+        }.get(self.procedencia, "Procedencia no determinada")
 
     # -- acceso a códigos ---------------------------------------------------
     def valor(self, *codigos: str, defecto: Decimal | None = None) -> Decimal | None:

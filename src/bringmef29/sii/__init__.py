@@ -4,6 +4,8 @@ from .errores import (
     ErrorSii,
     ErrorAutenticacion,
     DeclaracionNoEncontrada,
+    DeclaracionGuardadaNoEncontrada,
+    DeclaracionEsPropuesta,
     RespuestaInesperada,
 )
 
@@ -11,5 +13,7 @@ __all__ = [
     "ErrorSii",
     "ErrorAutenticacion",
     "DeclaracionNoEncontrada",
+    "DeclaracionGuardadaNoEncontrada",
+    "DeclaracionEsPropuesta",
     "RespuestaInesperada",
 ]
